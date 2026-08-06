@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Itinerários do Contraturno</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Itinerários do Contraturno</h1>
+    <p class="subtitle">Assista à apresentação de cada itinerário e escolha o seu para terça e para quarta-feira.</p>
+  </header>
+
+  <main class="container">
+    <section id="identificacao" class="card identificacao">
+      <h2>Quem é você?</h2>
+      <div class="form-row">
+        <label>
+          Nome completo
+          <input type="text" id="input-nome" placeholder="Seu nome completo" autocomplete="name" />
+        </label>
+        <label>
+          Turma / série
+          <input type="text" id="input-turma" placeholder="Ex: 9º Ano A" autocomplete="off" />
+        </label>
+        <button id="btn-salvar-aluno" type="button">Salvar</button>
+      </div>
+      <p id="status-aluno" class="hint"></p>
+    </section>
+
+    <p id="lembrete" class="lembrete" hidden></p>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-dia="terca">Terça-feira</button>
+      <button class="tab-btn" data-dia="quarta">Quarta-feira</button>
+    </nav>
+
+    <section id="lista-itinerarios" class="grid"></section>
+  </main>
+
+  <template id="template-card">
+    <article class="itinerario-card">
+      <div class="card-header">
+        <h3 class="titulo"></h3>
+        <span class="badge-vagas"></span>
+      </div>
+      <p class="professor"></p>
+      <div class="video-area"></div>
+      <p class="descricao"></p>
+      <button class="btn-escolher" type="button">Escolher este itinerário</button>
+    </article>
+  </template>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

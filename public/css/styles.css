@@ -1,0 +1,246 @@
+:root {
+  --azul: #1d4f91;
+  --azul-claro: #eaf1fb;
+  --verde: #2e9e5b;
+  --vermelho: #c0392b;
+  --cinza: #6b7280;
+  --borda: #dbe3ef;
+  --fundo: #f6f8fb;
+  --texto: #1f2937;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--fundo);
+  color: var(--texto);
+}
+
+.topbar {
+  background: var(--azul);
+  color: #fff;
+  padding: 28px 20px;
+  text-align: center;
+}
+
+.topbar h1 {
+  margin: 0 0 8px;
+  font-size: 1.6rem;
+}
+
+.subtitle {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 0.95rem;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 16px 60px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.identificacao h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-end;
+}
+
+.form-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--cinza);
+  flex: 1;
+  min-width: 200px;
+}
+
+.form-row input {
+  padding: 10px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.form-row button,
+.btn-escolher {
+  background: var(--azul);
+  color: #fff;
+  border: none;
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.form-row button:hover,
+.btn-escolher:hover:not(:disabled) {
+  background: #163f74;
+}
+
+.hint {
+  margin: 10px 0 0;
+  font-size: 0.85rem;
+  color: var(--cinza);
+}
+
+.hint.ok {
+  color: var(--verde);
+}
+
+.lembrete {
+  background: #fff6e0;
+  border: 1px solid #f0d488;
+  color: #7a5c00;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin: 18px 0;
+  font-size: 0.9rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin: 24px 0 18px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--borda);
+  background: #fff;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--texto);
+}
+
+.tab-btn.active {
+  background: var(--azul);
+  color: #fff;
+  border-color: var(--azul);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.itinerario-card {
+  background: #fff;
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.itinerario-card.escolhido {
+  border: 2px solid var(--verde);
+  box-shadow: 0 0 0 3px rgba(46, 158, 91, 0.12);
+}
+
+.itinerario-card.esgotado {
+  opacity: 0.75;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.professor {
+  margin: 0;
+  color: var(--cinza);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.badge-vagas {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  background: var(--azul-claro);
+  color: var(--azul);
+}
+
+.badge-vagas.pouco {
+  background: #fff1d6;
+  color: #a4600a;
+}
+
+.badge-vagas.esgotado {
+  background: #fde3e1;
+  color: var(--vermelho);
+}
+
+.video-area {
+  aspect-ratio: 16 / 9;
+  background: #10192b;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-area iframe,
+.video-area video {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.video-bloqueado,
+.video-vazio {
+  color: #cbd5e1;
+  text-align: center;
+  padding: 20px;
+  font-size: 0.9rem;
+}
+
+.descricao {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--texto);
+  line-height: 1.5;
+}
+
+.btn-escolher:disabled {
+  background: var(--cinza);
+  cursor: not-allowed;
+}
+
+.btn-escolher.selecionado {
+  background: var(--verde);
+}

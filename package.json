@@ -1,0 +1,14 @@
+{
+  "name": "itinerarios-eleve",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site de apresentação e escolha de itinerários do contraturno (Colégio Eleve)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file=.env server.js",
+    "seed": "node --env-file=.env src/seed.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
