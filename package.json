@@ -6,9 +6,11 @@
   "main": "server.js",
   "scripts": {
     "start": "node --env-file=.env server.js",
+    "migrate": "node --env-file=.env src/migrate.js",
     "seed": "node --env-file=.env src/seed.js"
   },
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "pg": "^8.22.0"
   }
 }

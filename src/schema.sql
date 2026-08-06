@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS itinerarios (
-  id            INTEGER PRIMARY KEY,
+  id            INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   slug          TEXT NOT NULL UNIQUE,
   dia           TEXT NOT NULL CHECK (dia IN ('terca','quarta')),
   titulo        TEXT NOT NULL,
@@ -12,15 +12,15 @@ CREATE TABLE IF NOT EXISTS itinerarios (
 );
 
 CREATE TABLE IF NOT EXISTS inscricoes (
-  id              INTEGER PRIMARY KEY,
+  id              INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   itinerario_id   INTEGER NOT NULL REFERENCES itinerarios(id),
   dia             TEXT NOT NULL CHECK (dia IN ('terca','quarta')),
   nome_aluno      TEXT NOT NULL,
   turma_aluno     TEXT NOT NULL,
   nome_norm       TEXT NOT NULL,
   turma_norm      TEXT NOT NULL,
-  created_at      TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at      TEXT NOT NULL DEFAULT (datetime('now'))
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_inscricoes_dia_aluno

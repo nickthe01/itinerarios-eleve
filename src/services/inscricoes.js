@@ -1,20 +1,26 @@
-const db = require('../db');
+const pool = require('../db');
 const { normalize } = require('../utils/normalize');
 
 const DIAS = ['terca', 'quarta'];
+const CHEIO = 'cheio';
+const NAO_ENCONTRADO = 'nao_encontrado';
 
-function countInscritos(itinerarioId) {
-  const row = db.prepare('SELECT COUNT(*) AS count FROM inscricoes WHERE itinerario_id = ?').get(itinerarioId);
-  return row.count;
+async function countInscritos(queryable, itinerarioId) {
+  const { rows } = await queryable.query('SELECT COUNT(*)::int AS count FROM inscricoes WHERE itinerario_id = $1', [
+    itinerarioId,
+  ]);
+  return rows[0].count;
 }
 
-function listByDia(dia) {
-  const rows = db.prepare('SELECT * FROM itinerarios WHERE dia = ? ORDER BY ordem').all(dia);
-  return rows.map((r) => {
-    const count = countInscritos(r.id);
+async function listByDia(dia) {
+  const { rows } = await pool.query('SELECT * FROM itinerarios WHERE dia = $1 ORDER BY ordem', [dia]);
+
+  const result = [];
+  for (const r of rows) {
+    const count = await countInscritos(pool, r.id);
     const vagas_restantes = Math.max(0, r.capacidade - count);
     const bloqueado = vagas_restantes <= 0;
-    return {
+    result.push({
       id: r.id,
       titulo: r.titulo,
       professor: r.professor,
@@ -23,99 +29,111 @@ function listByDia(dia) {
       vagas_restantes,
       bloqueado,
       video_url: bloqueado ? null : r.video_url || null,
-    };
-  });
+    });
+  }
+  return result;
 }
 
-function getMinhasEscolhas(nome, turma) {
+async function getMinhasEscolhas(nome, turma) {
   const nomeNorm = normalize(nome);
   const turmaNorm = normalize(turma);
   const result = { terca: null, quarta: null };
 
   for (const dia of DIAS) {
-    const row = db
-      .prepare(
-        `SELECT ins.dia AS dia, ins.created_at AS created_at,
-                it.id AS itinerario_id, it.titulo AS titulo, it.professor AS professor,
-                it.descricao AS descricao, it.video_url AS video_url, it.capacidade AS capacidade
-         FROM inscricoes ins
-         JOIN itinerarios it ON it.id = ins.itinerario_id
-         WHERE ins.dia = ? AND ins.nome_norm = ? AND ins.turma_norm = ?`
-      )
-      .get(dia, nomeNorm, turmaNorm);
-    result[dia] = row || null;
+    const { rows } = await pool.query(
+      `SELECT ins.dia AS dia, ins.created_at AS created_at,
+              it.id AS itinerario_id, it.titulo AS titulo, it.professor AS professor,
+              it.descricao AS descricao, it.video_url AS video_url, it.capacidade AS capacidade
+       FROM inscricoes ins
+       JOIN itinerarios it ON it.id = ins.itinerario_id
+       WHERE ins.dia = $1 AND ins.nome_norm = $2 AND ins.turma_norm = $3`,
+      [dia, nomeNorm, turmaNorm]
+    );
+    result[dia] = rows[0] || null;
   }
 
   return result;
 }
 
-const CHEIO = 'cheio';
-const NAO_ENCONTRADO = 'nao_encontrado';
-
-function chooseItinerario(nome, turma, itinerarioId) {
+async function chooseItinerario(nome, turma, itinerarioId) {
   const nomeTrim = String(nome || '').trim();
   const turmaTrim = String(turma || '').trim();
   const nomeNorm = normalize(nomeTrim);
   const turmaNorm = normalize(turmaTrim);
 
-  db.exec('BEGIN IMMEDIATE');
+  const client = await pool.connect();
   try {
-    const itinerario = db.prepare('SELECT * FROM itinerarios WHERE id = ?').get(itinerarioId);
+    await client.query('BEGIN');
+
+    const { rows: itinerarioRows } = await client.query('SELECT * FROM itinerarios WHERE id = $1 FOR UPDATE', [
+      itinerarioId,
+    ]);
+    const itinerario = itinerarioRows[0];
     if (!itinerario) {
-      db.exec('ROLLBACK');
+      await client.query('ROLLBACK');
       return { error: NAO_ENCONTRADO };
     }
 
-    const existing = db
-      .prepare('SELECT * FROM inscricoes WHERE dia = ? AND nome_norm = ? AND turma_norm = ?')
-      .get(itinerario.dia, nomeNorm, turmaNorm);
+    const { rows: existingRows } = await client.query(
+      'SELECT * FROM inscricoes WHERE dia = $1 AND nome_norm = $2 AND turma_norm = $3',
+      [itinerario.dia, nomeNorm, turmaNorm]
+    );
+    const existing = existingRows[0];
     const isSameSeat = existing && existing.itinerario_id === itinerario.id;
 
-    const count = countInscritos(itinerario.id);
+    const count = await countInscritos(client, itinerario.id);
     if (count >= itinerario.capacidade && !isSameSeat) {
-      db.exec('ROLLBACK');
+      await client.query('ROLLBACK');
       return { error: CHEIO };
     }
 
-    db.prepare(
+    await client.query(
       `INSERT INTO inscricoes (itinerario_id, dia, nome_aluno, turma_aluno, nome_norm, turma_norm, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
-       ON CONFLICT(dia, nome_norm, turma_norm) DO UPDATE SET
+       VALUES ($1, $2, $3, $4, $5, $6, now())
+       ON CONFLICT (dia, nome_norm, turma_norm) DO UPDATE SET
          itinerario_id = excluded.itinerario_id,
          nome_aluno = excluded.nome_aluno,
          turma_aluno = excluded.turma_aluno,
-         updated_at = datetime('now')`
-    ).run(itinerario.id, itinerario.dia, nomeTrim, turmaTrim, nomeNorm, turmaNorm);
+         updated_at = now()`,
+      [itinerario.id, itinerario.dia, nomeTrim, turmaTrim, nomeNorm, turmaNorm]
+    );
 
-    db.exec('COMMIT');
+    await client.query('COMMIT');
     return {
       ok: true,
       itinerario: { id: itinerario.id, titulo: itinerario.titulo, dia: itinerario.dia },
     };
   } catch (err) {
-    db.exec('ROLLBACK');
+    await client.query('ROLLBACK');
     throw err;
+  } finally {
+    client.release();
   }
 }
 
-function listAllForAdmin() {
-  const itinerarios = db.prepare('SELECT * FROM itinerarios ORDER BY dia DESC, ordem').all();
-  return itinerarios.map((it) => {
-    const alunos = db
-      .prepare('SELECT nome_aluno, turma_aluno, created_at FROM inscricoes WHERE itinerario_id = ? ORDER BY created_at')
-      .all(it.id);
+async function listAllForAdmin() {
+  const { rows: itinerarios } = await pool.query('SELECT * FROM itinerarios ORDER BY dia DESC, ordem');
+
+  const result = [];
+  for (const it of itinerarios) {
+    const { rows: alunos } = await pool.query(
+      'SELECT nome_aluno, turma_aluno, created_at FROM inscricoes WHERE itinerario_id = $1 ORDER BY created_at',
+      [it.id]
+    );
     const vagas_restantes = Math.max(0, it.capacidade - alunos.length);
-    return {
+    result.push({
       ...it,
       vagas_restantes,
       bloqueado: vagas_restantes <= 0,
       alunos,
-    };
-  });
+    });
+  }
+  return result;
 }
 
-function updateItinerario(id, fields) {
-  const current = db.prepare('SELECT * FROM itinerarios WHERE id = ?').get(id);
+async function updateItinerario(id, fields) {
+  const { rows } = await pool.query('SELECT * FROM itinerarios WHERE id = $1', [id]);
+  const current = rows[0];
   if (!current) return null;
 
   const merged = {
@@ -128,11 +146,13 @@ function updateItinerario(id, fields) {
     placeholder: fields.placeholder !== undefined ? (fields.placeholder ? 1 : 0) : current.placeholder,
   };
 
-  db.prepare(
-    'UPDATE itinerarios SET titulo = ?, professor = ?, descricao = ?, video_url = ?, capacidade = ?, placeholder = ? WHERE id = ?'
-  ).run(merged.titulo, merged.professor, merged.descricao, merged.video_url, merged.capacidade, merged.placeholder, id);
+  const { rows: updatedRows } = await pool.query(
+    `UPDATE itinerarios SET titulo = $1, professor = $2, descricao = $3, video_url = $4, capacidade = $5, placeholder = $6
+     WHERE id = $7 RETURNING *`,
+    [merged.titulo, merged.professor, merged.descricao, merged.video_url, merged.capacidade, merged.placeholder, id]
+  );
 
-  return db.prepare('SELECT * FROM itinerarios WHERE id = ?').get(id);
+  return updatedRows[0];
 }
 
 module.exports = {

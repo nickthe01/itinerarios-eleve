@@ -6,7 +6,7 @@ module.exports = [
     professor: 'Luciana',
     descricao:
       'Explorar como a biotecnologia transforma a maneira como lidamos com alimentos, doenças e produção animal. São técnicas que unem biologia, química e tecnologia para resolver problemas reais, do campo ao laboratório. Você vai estudar casos e pesquisas que envolvem melhoramento genético na agricultura, tecnologias de clonagem, avanços na saúde humana e inovações na agropecuária. A proposta é entender não só a ciência por trás dessas técnicas, mas também os dilemas éticos e sociais que elas trazem. É uma trilha para quem quer investigar como a ciência molda o futuro da alimentação, da medicina e do meio ambiente.',
-    video_url: '/videos/luciana.mp4',
+    video_url: 'https://cwbqrnwkbprxezirurny.supabase.co/storage/v1/object/public/videos/luciana.mp4',
     capacidade: 25,
     ordem: 1,
     placeholder: 0,
@@ -18,7 +18,7 @@ module.exports = [
     professor: 'Nicolas',
     descricao:
       'Projetar e construir foguetes de pressão, aplicando conceitos de física para transformar ar comprimido em impulso. Vai explorar a diferença entre foguetes de estágio um e dois, entendendo como a separação de estágios pode ampliar o alcance e a altitude atingida. A trilha inclui testes práticos para medir e comparar o desempenho de cada configuração, analisando variáveis como pressão, massa e ângulo de lançamento. Você vai registrar dados reais de altitude para avaliar qual estratégia é mais eficiente. É um caminho para quem quer unir teoria e experimentação na busca por resultados concretos.',
-    video_url: '/videos/nicolas.mp4',
+    video_url: 'https://cwbqrnwkbprxezirurny.supabase.co/storage/v1/object/public/videos/nicolas.mp4',
     capacidade: 25,
     ordem: 2,
     placeholder: 0,
@@ -30,7 +30,7 @@ module.exports = [
     professor: 'Breno',
     descricao:
       'Estudar a formação histórica da ONU, entendendo por que e como ela surgiu no cenário internacional. Vai conhecer a composição da organização, seus principais órgãos e o papel de cada país nesse sistema de cooperação global. Também vai investigar como funciona o processo de tomada de decisão entre as nações, incluindo os interesses e as negociações envolvidas. A trilha inclui uma simulação prática, na qual você representa um país e vivencia o processo de debate e decisão característico da ONU. É um caminho para quem quer entender relações internacionais na teoria e na prática.',
-    video_url: '/videos/breno.mp4',
+    video_url: 'https://cwbqrnwkbprxezirurny.supabase.co/storage/v1/object/public/videos/breno.mp4',
     capacidade: 25,
     ordem: 3,
     placeholder: 0,
@@ -42,7 +42,7 @@ module.exports = [
     professor: 'Samuel',
     descricao:
       'Investigar como a luz se propaga e interage com o mundo ao seu redor. Vai estudar os princípios da propagação retilínea, reflexão e refração, entendendo como esses fenômenos explicam desde a formação de sombras até o funcionamento de espelhos e lentes. Também vai descobrir como o olho humano capta a luz e forma imagens, revelando a física por trás do processo da visão. A trilha inclui experimentos práticos, para que você comprove na prática os conceitos estudados em teoria. É um caminho para quem quer entender, de forma concreta, os fenômenos luminosos que moldam nossa percepção do mundo.',
-    video_url: '/videos/samuel.mp4',
+    video_url: 'https://cwbqrnwkbprxezirurny.supabase.co/storage/v1/object/public/videos/samuel.mp4',
     capacidade: 20,
     ordem: 1,
     placeholder: 0,
@@ -54,7 +54,7 @@ module.exports = [
     professor: 'Aline',
     descricao:
       'Investigar o que significa se posicionar de forma ética e consciente no ambiente digital. Vai estudar técnicas de produção de conteúdo e comunicação, explorando tanto a linguagem verbal quanto a não verbal usadas para engajar uma audiência. Também vai discutir como a inteligência artificial está transformando a comunicação e a sociedade, e o que significa usá-la de forma consciente e responsável. Faz parte da trilha entender as leis de proteção de dados e os limites éticos da atuação nas mídias digitais. É um caminho para quem quer criar conteúdo com propósito, responsabilidade e senso crítico.',
-    video_url: '/videos/aline.mp4',
+    video_url: 'https://cwbqrnwkbprxezirurny.supabase.co/storage/v1/object/public/videos/aline.mp4',
     capacidade: 20,
     ordem: 2,
     placeholder: 0,
@@ -66,7 +66,7 @@ module.exports = [
     professor: 'Raphael',
     descricao:
       'Descobrir que a matemática é a linguagem usada para explorar o cosmos e responder perguntas que parecem de ficção científica. Vai calcular, por meio de equação, quais são as chances de existir vida inteligente em outros pontos do universo. Vai entender como o brilho observado de uma estrela permite calcular a distância até ela, usando a relação entre luminosidade e magnitude. Também vai estudar os cálculos de velocidade de escape e propulsão que permitem a um foguete vencer a gravidade da Terra e alcançar o espaço. É uma trilha para quem quer usar números e equações para investigar as maiores perguntas sobre o universo.',
-    video_url: '/videos/raphael.mp4',
+    video_url: 'https://cwbqrnwkbprxezirurny.supabase.co/storage/v1/object/public/videos/raphael.mp4',
     capacidade: 20,
     ordem: 3,
     placeholder: 0,

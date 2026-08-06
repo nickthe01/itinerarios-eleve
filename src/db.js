@@ -1,18 +1,12 @@
-const { DatabaseSync } = require('node:sqlite');
-const fs = require('node:fs');
-const path = require('node:path');
+const { Pool } = require('pg');
 
-const DB_PATH = process.env.DB_PATH || path.join(__dirname, '..', 'data', 'app.db');
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL não configurada (connection string do pooler do Supabase).');
+}
 
-fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});
 
-const db = new DatabaseSync(DB_PATH);
-
-db.exec('PRAGMA journal_mode = WAL');
-db.exec('PRAGMA busy_timeout = 5000');
-db.exec('PRAGMA foreign_keys = ON');
-
-const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
-db.exec(schema);
-
-module.exports = db;
+module.exports = pool;

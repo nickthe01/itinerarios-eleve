@@ -1,13 +1,17 @@
 # Itinerários Eleve
 
-Site para os alunos assistirem aos vídeos de apresentação dos itinerários do contraturno e escolherem um para terça e um para quarta-feira. As vagas são controladas pelo servidor: quando uma turma enche, o vídeo é bloqueado automaticamente para quem ainda não escolheu.
+Site para os alunos assistirem aos vídeos de apresentação dos itinerários do contraturno e escolherem um para terça e um para quarta-feira. As vagas são controladas pelo banco de dados: quando uma turma enche, o vídeo é bloqueado automaticamente para quem ainda não escolheu.
+
+Stack: Node.js + Express, banco Postgres hospedado no **Supabase**, deploy no **Vercel**, vídeos hospedados no **Supabase Storage**.
 
 ## Como rodar localmente
 
 ```bash
 cd "itinerario apresentação"
 npm install
-cp .env.example .env   # depois edite o ADMIN_TOKEN no .env
+cp .env.example .env   # edite ADMIN_TOKEN e DATABASE_URL no .env
+npm run migrate        # cria as tabelas no Supabase (só precisa rodar uma vez)
+npm run seed           # insere os itinerários (idempotente, pode rodar de novo sem duplicar)
 npm start
 ```
 
@@ -15,7 +19,9 @@ Abra:
 - Aluno: http://localhost:3000/
 - Admin: http://localhost:3000/admin.html (peça o token que está no `.env`)
 
-O banco de dados SQLite é criado automaticamente em `data/app.db` na primeira execução, junto com os 7 itinerários (6 já preenchidos + 1 de quarta-feira marcado como "PENDENTE" até você preencher os dados do 4º professor).
+## Onde vem o banco de dados
+
+O `DATABASE_URL` deve ser a **connection string do pooler em modo Transaction** do Supabase (Project Settings → Database → Connection string, porta `6543`, não a `5432` direta). Isso é importante: a porta direta tem limite baixo de conexões simultâneas e não é pensada para ambientes serverless como o Vercel.
 
 ## Preenchendo o itinerário pendente (4ª turma de quarta-feira)
 
@@ -23,10 +29,11 @@ Assim que tiver a descrição do professor que falta, abra o painel admin, cliqu
 
 ## Vídeos
 
-O campo "URL do vídeo" aceita:
+Os vídeos ficam hospedados no **Supabase Storage** (bucket público) — não fazem parte do repositório nem do deploy. O campo "URL do vídeo" de cada itinerário aceita:
+- URLs do Supabase Storage (`.../storage/v1/object/public/...mp4`)
 - Links do YouTube (`youtube.com/watch?v=...` ou `youtu.be/...`)
 - Links do Google Drive (`drive.google.com/file/d/.../view`)
-- Arquivos `.mp4` diretos
+- Qualquer arquivo `.mp4` direto
 - Qualquer outro link (aparece como "Ver vídeo")
 
 Você pode editar o link de cada itinerário no painel admin a qualquer momento, sem precisar tocar no código.
@@ -38,15 +45,21 @@ Você pode editar o link de cada itinerário no painel admin a qualquer momento,
 - Cada aluno escolhe **um itinerário de terça e um de quarta** (duas escolhas independentes).
 - Se o aluno mudar de ideia, basta escolher outro itinerário no mesmo dia — a vaga anterior é liberada automaticamente (se a nova turma ainda tiver vaga).
 - Quando uma turma atinge a capacidade, o vídeo fica bloqueado (some da lista) para qualquer aluno que ainda não tenha escolhido aquele itinerário. Quem já garantiu a vaga continua vendo seu próprio vídeo normalmente.
+- O controle de vagas usa travamento de linha no Postgres (`SELECT ... FOR UPDATE`) dentro de uma transação, então não há risco de vender mais vagas do que a capacidade, mesmo com várias pessoas escolhendo ao mesmo tempo em instâncias diferentes do Vercel.
 - **Importante:** a identificação do aluno é só nome + turma digitados, sem login. Isso significa que não há garantia de que a pessoa é realmente quem diz ser — é uma solução simples pensada para uso interno da escola, não à prova de fraude.
 
 ## Exportar lista de inscritos
 
 No painel admin, use os botões **Exportar CSV** (por itinerário) ou **Exportar CSV (tudo)**. O arquivo abre corretamente no Excel, com acentos e nomes brasileiros.
 
-## Publicando o site (quando decidir a hospedagem)
+## Deploy no Vercel
 
-Isso é um app Node.js comum — funciona em qualquer serviço que rode Node (Render, Railway, Fly.io, um VPS, etc.). Só é preciso:
-1. Definir as variáveis de ambiente `PORT`, `ADMIN_TOKEN` e `DB_PATH`.
-2. Garantir que a pasta `data/` (onde fica o banco SQLite) tenha armazenamento **persistente** entre reinícios/deploys — em serviços com disco efêmero, será necessário trocar o SQLite por um banco hospedado (ex: Postgres) mais adiante.
-3. Rodar `npm install && npm start`.
+```bash
+vercel login          # interativo, abre o navegador
+vercel link           # conecta esta pasta a um projeto Vercel
+vercel env add DATABASE_URL production
+vercel env add ADMIN_TOKEN production
+vercel deploy --prod
+```
+
+Não é preciso `vercel.json` — o Vercel detecta o `server.js` automaticamente (zero config para Express). Só é necessário rodar `npm run migrate` e `npm run seed` uma vez, localmente, apontando para o mesmo `DATABASE_URL` do Supabase que o Vercel vai usar.
