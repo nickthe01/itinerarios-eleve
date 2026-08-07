@@ -117,7 +117,7 @@ async function listAllForAdmin() {
   const result = [];
   for (const it of itinerarios) {
     const { rows: alunos } = await pool.query(
-      'SELECT nome_aluno, turma_aluno, created_at FROM inscricoes WHERE itinerario_id = $1 ORDER BY created_at',
+      'SELECT id, nome_aluno, turma_aluno, created_at FROM inscricoes WHERE itinerario_id = $1 ORDER BY created_at',
       [it.id]
     );
     const vagas_restantes = Math.max(0, it.capacidade - alunos.length);
@@ -155,12 +155,18 @@ async function updateItinerario(id, fields) {
   return updatedRows[0];
 }
 
+async function removerInscricao(id) {
+  const { rows } = await pool.query('DELETE FROM inscricoes WHERE id = $1 RETURNING *', [id]);
+  return rows[0] || null;
+}
+
 module.exports = {
   listByDia,
   getMinhasEscolhas,
   chooseItinerario,
   listAllForAdmin,
   updateItinerario,
+  removerInscricao,
   CHEIO,
   NAO_ENCONTRADO,
 };

@@ -143,3 +143,20 @@
   padding: 6px 8px;
   border-bottom: 1px solid var(--borda);
 }
+
+.btn-remover-aluno {
+  background: #ffe1de;
+  color: var(--vermelho);
+  border: none;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btn-remover-aluno:hover {
+  background: var(--vermelho);
+  color: #fff;
+}

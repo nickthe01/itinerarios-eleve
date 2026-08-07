@@ -39,6 +39,17 @@ router.get(
   })
 );
 
+router.delete(
+  '/inscricoes/:id',
+  asyncHandler(async (req, res) => {
+    const removida = await service.removerInscricao(req.params.id);
+    if (!removida) {
+      return res.status(404).json({ error: 'nao_encontrado' });
+    }
+    res.json({ ok: true });
+  })
+);
+
 router.get(
   '/export.csv',
   asyncHandler(async (req, res) => {

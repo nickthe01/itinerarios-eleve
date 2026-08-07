@@ -100,6 +100,19 @@
 
   els.btnExportTudo.addEventListener('click', () => baixarCsv());
 
+  async function removerAluno(id, nome) {
+    if (!confirm(`Remover a inscrição de "${nome}"? A vaga volta a ficar disponível.`)) return;
+    const resp = await fetch(`/api/coordenacao/inscricoes/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeader(),
+    });
+    if (!resp.ok) {
+      alert('Não foi possível remover essa inscrição.');
+      return;
+    }
+    await carregar();
+  }
+
   function renderCard(item) {
     const node = els.template.content.cloneNode(true);
 
@@ -118,11 +131,17 @@
     const semAlunos = listaAlunos.querySelector('.sem-alunos');
     item.alunos.forEach((aluno, idx) => {
       const tr = document.createElement('tr');
-      tr.innerHTML = '<td></td><td></td><td></td><td></td>';
+      tr.innerHTML = '<td></td><td></td><td></td><td></td><td></td>';
       tr.children[0].textContent = idx + 1;
       tr.children[1].textContent = aluno.nome_aluno;
       tr.children[2].textContent = aluno.turma_aluno;
       tr.children[3].textContent = aluno.created_at;
+      const btnRemover = document.createElement('button');
+      btnRemover.textContent = 'Remover';
+      btnRemover.className = 'btn-remover-aluno';
+      btnRemover.type = 'button';
+      btnRemover.addEventListener('click', () => removerAluno(aluno.id, aluno.nome_aluno));
+      tr.children[4].appendChild(btnRemover);
       tbody.appendChild(tr);
     });
     semAlunos.hidden = item.alunos.length > 0;
