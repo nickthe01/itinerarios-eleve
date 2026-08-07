@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/admin.css" />
 </head>
 <body>
   <header class="topbar">
@@ -42,6 +43,67 @@
     <section id="lista-itinerarios" class="grid"></section>
   </main>
 
+  <footer class="footer-coord">
+    <button id="btn-abrir-coordenacao" type="button">Área da Coordenação</button>
+  </footer>
+
+  <div id="coordenacao-overlay" class="overlay" hidden>
+    <div class="modal">
+      <button id="btn-fechar-coordenacao" class="btn-fechar-modal" type="button" aria-label="Fechar">×</button>
+
+      <section id="coord-login-box">
+        <h2>Acesso da Coordenação</h2>
+        <div class="form-row">
+          <label>
+            Usuário
+            <input type="text" id="coord-input-login" autocomplete="username" />
+          </label>
+          <label>
+            Senha
+            <input type="password" id="coord-input-senha" autocomplete="current-password" />
+          </label>
+          <button id="coord-btn-entrar" type="button">Entrar</button>
+        </div>
+        <p id="coord-login-erro" class="hint"></p>
+      </section>
+
+      <section id="coord-painel" hidden>
+        <div class="admin-toolbar">
+          <button id="coord-btn-atualizar" type="button">Atualizar</button>
+          <button id="coord-btn-export-tudo" class="btn-export" type="button">Exportar CSV (tudo)</button>
+        </div>
+        <div id="coord-relatorio-lista"></div>
+      </section>
+    </div>
+  </div>
+
+  <template id="template-relatorio-card">
+    <article class="admin-card">
+      <div class="admin-card-header">
+        <div>
+          <span class="dia-tag"></span>
+          <h3 class="titulo"></h3>
+        </div>
+        <span class="badge-vagas"></span>
+      </div>
+      <p class="professor"></p>
+      <div class="admin-actions">
+        <button class="btn-toggle-alunos" type="button">Ver alunos</button>
+        <button class="btn-export-item" type="button">Exportar CSV</button>
+      </div>
+
+      <div class="lista-alunos" hidden>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Nome</th><th>Turma</th><th>Inscrito em</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="sem-alunos" hidden>Nenhum aluno inscrito ainda.</p>
+      </div>
+    </article>
+  </template>
+
   <template id="template-card">
     <article class="itinerario-card">
       <div class="card-header">
@@ -56,5 +118,6 @@
   </template>
 
   <script src="js/app.js"></script>
+  <script src="js/coordenacao-modal.js"></script>
 </body>
 </html>

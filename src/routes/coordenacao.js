@@ -27,7 +27,6 @@ router.use((req, res, next) => {
 
   const credentials = getCredentials(req);
   if (!credentials || credentials.login !== expectedLogin || credentials.senha !== expectedSenha) {
-    res.setHeader('WWW-Authenticate', 'Basic realm="Coordenação"');
     return res.status(401).json({ error: 'nao_autorizado' });
   }
   next();

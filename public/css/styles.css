@@ -309,3 +309,61 @@ h1, h2, h3 {
 .btn-escolher.selecionado {
   background: linear-gradient(135deg, var(--verde-agua) 0%, var(--verde-agua-escuro) 100%);
 }
+
+.footer-coord {
+  text-align: center;
+  padding: 10px 0 40px;
+}
+
+.footer-coord button {
+  background: none;
+  border: none;
+  color: var(--cinza);
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  opacity: 0.7;
+}
+
+.footer-coord button:hover {
+  opacity: 1;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(58, 53, 66, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+}
+
+.modal {
+  position: relative;
+  background: #fff;
+  border-radius: 20px;
+  padding: 28px;
+  max-width: 720px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px -15px rgba(58, 53, 66, 0.4);
+}
+
+.btn-fechar-modal {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--borda);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--roxo-escuro);
+  cursor: pointer;
+}

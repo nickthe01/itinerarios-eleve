@@ -1,39 +1,60 @@
 (function () {
   const els = {
-    loginBox: document.getElementById('login-box'),
-    inputLogin: document.getElementById('input-login'),
-    inputSenha: document.getElementById('input-senha'),
-    btnEntrar: document.getElementById('btn-entrar'),
-    loginErro: document.getElementById('login-erro'),
-    painel: document.getElementById('painel'),
-    lista: document.getElementById('relatorio-lista'),
-    btnAtualizar: document.getElementById('btn-atualizar'),
-    btnExportTudo: document.getElementById('btn-export-tudo'),
+    overlay: document.getElementById('coordenacao-overlay'),
+    btnAbrir: document.getElementById('btn-abrir-coordenacao'),
+    btnFechar: document.getElementById('btn-fechar-coordenacao'),
+    loginBox: document.getElementById('coord-login-box'),
+    inputLogin: document.getElementById('coord-input-login'),
+    inputSenha: document.getElementById('coord-input-senha'),
+    btnEntrar: document.getElementById('coord-btn-entrar'),
+    loginErro: document.getElementById('coord-login-erro'),
+    painel: document.getElementById('coord-painel'),
+    lista: document.getElementById('coord-relatorio-lista'),
+    btnAtualizar: document.getElementById('coord-btn-atualizar'),
+    btnExportTudo: document.getElementById('coord-btn-export-tudo'),
     template: document.getElementById('template-relatorio-card'),
   };
+
+  if (!els.overlay) return;
 
   function getAuthHeader() {
     const creds = sessionStorage.getItem('coordenacao_creds') || '';
     return { Authorization: `Basic ${creds}` };
   }
 
+  function abrirModal() {
+    els.overlay.hidden = false;
+    const savedCreds = sessionStorage.getItem('coordenacao_creds');
+    if (savedCreds) {
+      carregar();
+    }
+  }
+
+  function fecharModal() {
+    els.overlay.hidden = true;
+  }
+
+  els.btnAbrir.addEventListener('click', abrirModal);
+  els.btnFechar.addEventListener('click', fecharModal);
+  els.overlay.addEventListener('click', (ev) => {
+    if (ev.target === els.overlay) fecharModal();
+  });
+
   async function tentarEntrar(login, senha) {
     const encoded = btoa(`${login}:${senha}`);
     const resp = await fetch('/api/coordenacao/relatorio', { headers: { Authorization: `Basic ${encoded}` } });
     if (resp.status === 401) {
       els.loginErro.textContent = 'Usuário ou senha inválidos.';
-      return false;
+      return;
     }
     if (!resp.ok) {
       els.loginErro.textContent = 'Erro ao conectar ao servidor.';
-      return false;
+      return;
     }
     sessionStorage.setItem('coordenacao_creds', encoded);
     els.loginBox.hidden = true;
     els.painel.hidden = false;
-    const items = await resp.json();
-    render(items);
-    return true;
+    render(await resp.json());
   }
 
   els.btnEntrar.addEventListener('click', () => {
@@ -54,8 +75,9 @@
       els.loginErro.textContent = 'Sessão expirada, entre novamente.';
       return;
     }
-    const items = await resp.json();
-    render(items);
+    els.loginBox.hidden = true;
+    els.painel.hidden = false;
+    render(await resp.json());
   }
 
   async function baixarCsv(itinerarioId) {
@@ -115,16 +137,5 @@
   function render(items) {
     els.lista.innerHTML = '';
     items.forEach((item) => els.lista.appendChild(renderCard(item)));
-  }
-
-  const savedCreds = sessionStorage.getItem('coordenacao_creds');
-  if (savedCreds) {
-    fetch('/api/coordenacao/relatorio', { headers: { Authorization: `Basic ${savedCreds}` } }).then(async (resp) => {
-      if (resp.ok) {
-        els.loginBox.hidden = true;
-        els.painel.hidden = false;
-        render(await resp.json());
-      }
-    });
   }
 })();
