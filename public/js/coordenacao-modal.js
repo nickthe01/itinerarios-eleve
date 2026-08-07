@@ -17,27 +17,59 @@
 
   if (!els.overlay) return;
 
+  const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  });
+  let lastFocused = null;
+
   function getAuthHeader() {
     const creds = sessionStorage.getItem('coordenacao_creds') || '';
     return { Authorization: `Basic ${creds}` };
   }
 
   function abrirModal() {
+    lastFocused = document.activeElement;
     els.overlay.hidden = false;
+    document.body.classList.add('modal-aberto');
     const savedCreds = sessionStorage.getItem('coordenacao_creds');
     if (savedCreds) {
       carregar();
     }
+    requestAnimationFrame(() => {
+      (savedCreds ? els.btnFechar : els.inputLogin).focus();
+    });
   }
 
   function fecharModal() {
     els.overlay.hidden = true;
+    document.body.classList.remove('modal-aberto');
+    if (lastFocused instanceof HTMLElement) lastFocused.focus();
   }
 
   els.btnAbrir.addEventListener('click', abrirModal);
   els.btnFechar.addEventListener('click', fecharModal);
   els.overlay.addEventListener('click', (ev) => {
     if (ev.target === els.overlay) fecharModal();
+  });
+  els.overlay.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape') {
+      fecharModal();
+      return;
+    }
+    if (ev.key !== 'Tab') return;
+    const focusable = [...els.overlay.querySelectorAll('button:not([disabled]), input:not([disabled]), a[href]')]
+      .filter((element) => !element.hidden && element.offsetParent !== null);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (ev.shiftKey && document.activeElement === first) {
+      ev.preventDefault();
+      last.focus();
+    } else if (!ev.shiftKey && document.activeElement === last) {
+      ev.preventDefault();
+      first.focus();
+    }
   });
 
   async function tentarEntrar(login, senha) {
@@ -135,7 +167,7 @@
       tr.children[0].textContent = idx + 1;
       tr.children[1].textContent = aluno.nome_aluno;
       tr.children[2].textContent = aluno.turma_aluno;
-      tr.children[3].textContent = aluno.created_at;
+      tr.children[3].textContent = dateFormatter.format(new Date(aluno.created_at));
       const btnRemover = document.createElement('button');
       btnRemover.textContent = 'Remover';
       btnRemover.className = 'btn-remover-aluno';
@@ -146,8 +178,12 @@
     });
     semAlunos.hidden = item.alunos.length > 0;
 
-    node.querySelector('.btn-toggle-alunos').addEventListener('click', () => {
+    const toggleButton = node.querySelector('.btn-toggle-alunos');
+    toggleButton.addEventListener('click', () => {
       listaAlunos.hidden = !listaAlunos.hidden;
+      const expanded = !listaAlunos.hidden;
+      toggleButton.setAttribute('aria-expanded', String(expanded));
+      toggleButton.textContent = expanded ? 'Ocultar Alunos' : 'Ver Alunos';
     });
 
     return node;

@@ -3,37 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2d2d2d" />
   <title>Admin — Itinerários</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/admin.css" />
 </head>
 <body>
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+  <div class="brandbar brandbar-admin">
+    <div class="brandbar-inner">
+      <a class="brand-lockup" href="/" aria-label="Colégio Eleve — início">
+        <span class="brand-logo-frame" aria-hidden="true">
+          <img class="brand-logo" src="assets/logo-eleve.png" alt="" width="29" height="40" />
+        </span>
+        <span class="brand-wordmark"><strong>ELEVE</strong><small>COLÉGIO</small></span>
+      </a>
+      <span class="brand-product">Admin escolar</span>
+    </div>
+  </div>
   <header class="topbar">
-    <img src="logo-colegio.png" alt="Logo do colégio" class="logo-colegio" />
     <h1>Painel Admin — Itinerários</h1>
     <p class="subtitle">Acompanhe as vagas, edite dados e exporte a lista de inscritos.</p>
   </header>
 
-  <main class="container">
+  <main id="conteudo-principal" class="container admin-container">
     <section id="login-box" class="card">
       <h2>Acesso administrativo</h2>
-      <div class="form-row">
-        <label>
+      <form id="form-login-admin" class="form-row">
+        <label for="input-token">
           Token de admin
-          <input type="password" id="input-token" placeholder="Cole o ADMIN_TOKEN" />
+          <input type="password" id="input-token" name="token" placeholder="Cole o token de acesso…" autocomplete="current-password" spellcheck="false" required />
         </label>
-        <button id="btn-entrar" type="button">Entrar</button>
-      </div>
-      <p id="login-erro" class="hint"></p>
+        <button id="btn-entrar" type="submit">Entrar</button>
+      </form>
+      <p id="login-erro" class="hint" role="status" aria-live="polite"></p>
     </section>
 
     <section id="painel" hidden>
       <div class="admin-toolbar">
-        <button id="btn-atualizar" type="button">Atualizar</button>
-        <a id="link-export-tudo" class="btn-export" href="#">Exportar CSV (tudo)</a>
+        <button id="btn-atualizar" type="button">Atualizar Dados</button>
+        <a id="link-export-tudo" class="btn-export" href="#">Exportar CSV (Tudo)</a>
+        <p id="admin-status" class="admin-status" role="status" aria-live="polite"></p>
       </div>
       <div id="admin-lista"></div>
     </section>
@@ -51,24 +64,24 @@
       </div>
       <p class="professor"></p>
       <div class="admin-actions">
-        <button class="btn-toggle-editar" type="button">Editar</button>
-        <button class="btn-toggle-alunos" type="button">Ver alunos</button>
+        <button class="btn-toggle-editar" type="button" aria-expanded="false">Editar</button>
+        <button class="btn-toggle-alunos" type="button" aria-expanded="false">Ver Alunos</button>
         <a class="btn-export" href="#">Exportar CSV</a>
       </div>
 
       <form class="form-editar" hidden>
-        <label>Título <input name="titulo" type="text" /></label>
-        <label>Professor(a) <input name="professor" type="text" /></label>
-        <label>Descrição <textarea name="descricao" rows="4"></textarea></label>
-        <label>URL do vídeo <input name="video_url" type="text" placeholder="https://..." /></label>
-        <label>Capacidade <input name="capacidade" type="number" min="1" /></label>
+        <label>Título <input name="titulo" type="text" autocomplete="off" /></label>
+        <label>Professor(a) <input name="professor" type="text" autocomplete="off" /></label>
+        <label>Descrição <textarea name="descricao" rows="4" autocomplete="off"></textarea></label>
+        <label>URL do vídeo <input name="video_url" type="url" placeholder="https://…" autocomplete="off" spellcheck="false" /></label>
+        <label>Capacidade <input name="capacidade" type="number" min="1" inputmode="numeric" autocomplete="off" /></label>
         <div class="form-editar-botoes">
           <button type="submit">Salvar alterações</button>
-          <span class="salvo-msg"></span>
+          <span class="salvo-msg" role="status" aria-live="polite"></span>
         </div>
       </form>
 
-      <div class="lista-alunos" hidden>
+      <div class="lista-alunos table-scroll" hidden>
         <table>
           <thead>
             <tr><th>#</th><th>Nome</th><th>Turma</th><th>Inscrito em</th></tr>

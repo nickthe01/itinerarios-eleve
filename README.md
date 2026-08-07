@@ -42,9 +42,10 @@ Você pode editar o link de cada itinerário no painel admin a qualquer momento,
 
 - Terça-feira: 3 turmas, 25 vagas cada.
 - Quarta-feira: 4 turmas, 20 vagas cada.
-- Cada aluno escolhe **um itinerário de terça e um de quarta** (duas escolhas independentes).
-- Se o aluno mudar de ideia, basta escolher outro itinerário no mesmo dia — a vaga anterior é liberada automaticamente (se a nova turma ainda tiver vaga).
-- Quando uma turma atinge a capacidade, o vídeo fica bloqueado (some da lista) para qualquer aluno que ainda não tenha escolhido aquele itinerário. Quem já garantiu a vaga continua vendo seu próprio vídeo normalmente.
+- Cada aluno escolhe **um itinerário de terça e um de quarta** e revisa as duas opções antes de confirmar.
+- As duas escolhas são gravadas juntas na confirmação final. Se uma delas tiver acabado de lotar, nenhuma alteração é aplicada e o aluno pode escolher outra opção.
+- Se o aluno mudar de ideia depois de confirmar, pode revisar os dois dias e confirmar novamente. A vaga anterior é liberada automaticamente.
+- Quando uma turma atinge a capacidade, a apresentação continua disponível, mas a ação de matrícula é bloqueada.
 - O controle de vagas usa travamento de linha no Postgres (`SELECT ... FOR UPDATE`) dentro de uma transação, então não há risco de vender mais vagas do que a capacidade, mesmo com várias pessoas escolhendo ao mesmo tempo em instâncias diferentes do Vercel.
 - **Importante:** a identificação do aluno é só nome + turma digitados, sem login. Isso significa que não há garantia de que a pessoa é realmente quem diz ser — é uma solução simples pensada para uso interno da escola, não à prova de fraude.
 
