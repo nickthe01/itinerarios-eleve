@@ -1,17 +1,25 @@
 :root {
-  --roxo: #7c3aed;
-  --roxo-escuro: #5b21b6;
-  --rosa: #ec4899;
-  --amarelo: #fbbf24;
-  --azul: #7c3aed;
-  --azul-claro: #f1e8fd;
-  --verde: #22c55e;
-  --vermelho: #f43f5e;
-  --cinza: #6b7280;
-  --borda: #ecdff9;
-  --fundo: #fdf7ff;
-  --texto: #1f2937;
-  --gradiente: linear-gradient(135deg, var(--roxo) 0%, var(--rosa) 100%);
+  --laranja-claro: #ffe3cc;
+  --laranja: #ff9f5a;
+  --laranja-escuro: #c96a2e;
+
+  --verde-agua-claro: #d7f5ee;
+  --verde-agua: #6fcdbb;
+  --verde-agua-escuro: #237566;
+
+  --roxo-claro: #eae1f9;
+  --roxo: #b29ae0;
+  --roxo-escuro: #6b4fa0;
+
+  --azul: var(--laranja);
+  --azul-claro: var(--roxo-claro);
+  --verde: var(--verde-agua);
+  --vermelho: #c1443a;
+  --cinza: #8a8391;
+  --borda: #f0e3ec;
+  --fundo: #fdf6f0;
+  --texto: #3a3542;
+  --gradiente: linear-gradient(135deg, var(--laranja) 0%, var(--roxo) 100%);
 }
 
 * {
@@ -21,7 +29,7 @@
 body {
   margin: 0;
   font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: linear-gradient(180deg, #fdf4ff 0%, #fff7ed 45%, #fdf7ff 100%);
+  background: linear-gradient(180deg, #fff3e9 0%, #f0fbf7 45%, #f6f1fc 100%);
   color: var(--texto);
 }
 
@@ -35,7 +43,7 @@ h1, h2, h3 {
   padding: 36px 20px 44px;
   text-align: center;
   border-radius: 0 0 32px 32px;
-  box-shadow: 0 10px 30px -10px rgba(124, 58, 237, 0.5);
+  box-shadow: 0 10px 26px -12px rgba(201, 106, 46, 0.4);
 }
 
 .topbar h1 {
@@ -61,7 +69,7 @@ h1, h2, h3 {
   border: 1px solid var(--borda);
   border-radius: 20px;
   padding: 20px;
-  box-shadow: 0 6px 20px -10px rgba(124, 58, 237, 0.15);
+  box-shadow: 0 6px 18px -12px rgba(107, 79, 160, 0.18);
 }
 
 .identificacao h2 {
@@ -98,7 +106,7 @@ h1, h2, h3 {
 
 .form-row input:focus {
   outline: none;
-  border-color: var(--roxo);
+  border-color: var(--laranja);
 }
 
 .form-row button,
@@ -113,13 +121,13 @@ h1, h2, h3 {
   font-family: inherit;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 4px 14px -4px rgba(124, 58, 237, 0.5);
+  box-shadow: 0 4px 14px -4px rgba(201, 106, 46, 0.45);
 }
 
 .form-row button:hover,
 .btn-escolher:hover:not(:disabled) {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 20px -6px rgba(124, 58, 237, 0.55);
+  box-shadow: 0 8px 18px -6px rgba(201, 106, 46, 0.5);
 }
 
 .hint {
@@ -129,14 +137,14 @@ h1, h2, h3 {
 }
 
 .hint.ok {
-  color: var(--verde);
+  color: var(--verde-agua-escuro);
   font-weight: 700;
 }
 
 .lembrete {
-  background: #fff3d6;
-  border: 2px dashed var(--amarelo);
-  color: #8a5a00;
+  background: var(--laranja-claro);
+  border: 2px dashed var(--laranja);
+  color: var(--laranja-escuro);
   padding: 14px 18px;
   border-radius: 16px;
   margin: 18px 0;
@@ -172,7 +180,7 @@ h1, h2, h3 {
   background: var(--gradiente);
   color: #fff;
   border-color: transparent;
-  box-shadow: 0 6px 16px -6px rgba(124, 58, 237, 0.5);
+  box-shadow: 0 6px 16px -6px rgba(201, 106, 46, 0.45);
 }
 
 .grid {
@@ -184,13 +192,13 @@ h1, h2, h3 {
 .itinerario-card {
   background: #fff;
   border: 1px solid var(--borda);
-  border-top: 6px solid var(--roxo);
+  border-top: 6px solid var(--laranja);
   border-radius: 20px;
   padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  box-shadow: 0 6px 20px -12px rgba(124, 58, 237, 0.25);
+  box-shadow: 0 6px 18px -12px rgba(107, 79, 160, 0.2);
   transition: transform 0.15s ease;
 }
 
@@ -199,21 +207,21 @@ h1, h2, h3 {
 }
 
 .itinerario-card:nth-of-type(2) {
-  border-top-color: var(--rosa);
+  border-top-color: var(--verde-agua);
 }
 
 .itinerario-card:nth-of-type(3) {
-  border-top-color: var(--amarelo);
+  border-top-color: var(--roxo);
 }
 
 .itinerario-card:nth-of-type(4) {
-  border-top-color: var(--verde);
+  border-top-color: var(--laranja);
 }
 
 .itinerario-card.escolhido {
-  border: 2px solid var(--verde);
-  border-top: 6px solid var(--verde);
-  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+  border: 2px solid var(--verde-agua);
+  border-top: 6px solid var(--verde-agua);
+  box-shadow: 0 0 0 4px rgba(111, 205, 187, 0.2);
 }
 
 .itinerario-card.esgotado {
@@ -246,8 +254,8 @@ h1, h2, h3 {
   padding: 5px 12px;
   border-radius: 999px;
   white-space: nowrap;
-  background: var(--azul-claro);
-  color: var(--roxo-escuro);
+  background: var(--verde-agua-claro);
+  color: var(--verde-agua-escuro);
 }
 
 .badge-vagas.pouco {
@@ -256,13 +264,13 @@ h1, h2, h3 {
 }
 
 .badge-vagas.esgotado {
-  background: #ffe1e8;
+  background: #ffe1de;
   color: var(--vermelho);
 }
 
 .video-area {
   aspect-ratio: 16 / 9;
-  background: #1b1330;
+  background: #2c2438;
   border-radius: 14px;
   overflow: hidden;
   display: flex;
@@ -299,5 +307,5 @@ h1, h2, h3 {
 }
 
 .btn-escolher.selecionado {
-  background: linear-gradient(135deg, var(--verde) 0%, #16a34a 100%);
+  background: linear-gradient(135deg, var(--verde-agua) 0%, var(--verde-agua-escuro) 100%);
 }
