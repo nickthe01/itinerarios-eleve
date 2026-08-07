@@ -38,9 +38,43 @@
     return Boolean(nome && turma);
   }
 
+  const ALUNOS_POR_TURMA = window.ALUNOS_POR_TURMA || {};
+
+  function popularTurmas() {
+    els.turma.innerHTML = '<option value="">Selecione sua turma...</option>';
+    Object.keys(ALUNOS_POR_TURMA).forEach((turma) => {
+      const opt = document.createElement('option');
+      opt.value = turma;
+      opt.textContent = turma;
+      els.turma.appendChild(opt);
+    });
+  }
+
+  function popularNomes(turma) {
+    const nomes = (ALUNOS_POR_TURMA[turma] || []).slice().sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    els.nome.innerHTML = '';
+    const optVazia = document.createElement('option');
+    optVazia.value = '';
+    optVazia.textContent = nomes.length ? 'Selecione seu nome...' : 'Selecione a turma primeiro...';
+    els.nome.appendChild(optVazia);
+    nomes.forEach((nome) => {
+      const opt = document.createElement('option');
+      opt.value = nome;
+      opt.textContent = nome;
+      els.nome.appendChild(opt);
+    });
+    els.nome.disabled = nomes.length === 0;
+  }
+
   function loadAlunoFromStorage() {
-    els.nome.value = localStorage.getItem('itin_nome') || '';
-    els.turma.value = localStorage.getItem('itin_turma') || '';
+    popularTurmas();
+    const turmaSalva = localStorage.getItem('itin_turma') || '';
+    const nomeSalvo = localStorage.getItem('itin_nome') || '';
+    els.turma.value = turmaSalva;
+    popularNomes(turmaSalva);
+    if (nomeSalvo && Array.from(els.nome.options).some((o) => o.value === nomeSalvo)) {
+      els.nome.value = nomeSalvo;
+    }
     atualizarStatusAluno();
   }
 
@@ -65,7 +99,7 @@
       els.statusAluno.textContent = `Identificado como ${getAluno().nome} (${getAluno().turma}).`;
       els.statusAluno.className = 'hint ok';
     } else {
-      els.statusAluno.textContent = 'Preencha seu nome, selecione a série e clique em Salvar antes de escolher um itinerário.';
+      els.statusAluno.textContent = 'Selecione sua turma e depois seu nome antes de escolher um itinerário.';
       els.statusAluno.className = 'hint';
     }
   }
@@ -324,9 +358,15 @@
 
   els.tabs.forEach((btn) => btn.addEventListener('click', () => mudarDia(btn.dataset.dia)));
 
-  els.nome.addEventListener('input', persistirAluno);
-  els.nome.addEventListener('blur', atualizarAposIdentificar);
   els.turma.addEventListener('change', () => {
+    localStorage.removeItem('itin_nome');
+    els.nome.value = '';
+    popularNomes(els.turma.value);
+    persistirAluno();
+    atualizarAposIdentificar();
+  });
+
+  els.nome.addEventListener('change', () => {
     persistirAluno();
     atualizarAposIdentificar();
   });
