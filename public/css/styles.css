@@ -1,12 +1,17 @@
 :root {
-  --azul: #1d4f91;
-  --azul-claro: #eaf1fb;
-  --verde: #2e9e5b;
-  --vermelho: #c0392b;
+  --roxo: #7c3aed;
+  --roxo-escuro: #5b21b6;
+  --rosa: #ec4899;
+  --amarelo: #fbbf24;
+  --azul: #7c3aed;
+  --azul-claro: #f1e8fd;
+  --verde: #22c55e;
+  --vermelho: #f43f5e;
   --cinza: #6b7280;
-  --borda: #dbe3ef;
-  --fundo: #f6f8fb;
+  --borda: #ecdff9;
+  --fundo: #fdf7ff;
   --texto: #1f2937;
+  --gradiente: linear-gradient(135deg, var(--roxo) 0%, var(--rosa) 100%);
 }
 
 * {
@@ -15,27 +20,34 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: var(--fundo);
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #fdf4ff 0%, #fff7ed 45%, #fdf7ff 100%);
   color: var(--texto);
 }
 
+h1, h2, h3 {
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+}
+
 .topbar {
-  background: var(--azul);
+  background: var(--gradiente);
   color: #fff;
-  padding: 28px 20px;
+  padding: 36px 20px 44px;
   text-align: center;
+  border-radius: 0 0 32px 32px;
+  box-shadow: 0 10px 30px -10px rgba(124, 58, 237, 0.5);
 }
 
 .topbar h1 {
   margin: 0 0 8px;
-  font-size: 1.6rem;
+  font-size: 1.9rem;
+  font-weight: 700;
 }
 
 .subtitle {
   margin: 0;
-  opacity: 0.9;
-  font-size: 0.95rem;
+  opacity: 0.95;
+  font-size: 1rem;
 }
 
 .container {
@@ -47,13 +59,15 @@ body {
 .card {
   background: #fff;
   border: 1px solid var(--borda);
-  border-radius: 12px;
+  border-radius: 20px;
   padding: 20px;
+  box-shadow: 0 6px 20px -10px rgba(124, 58, 237, 0.15);
 }
 
 .identificacao h2 {
   margin-top: 0;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  color: var(--roxo-escuro);
 }
 
 .form-row {
@@ -74,27 +88,38 @@ body {
 }
 
 .form-row input {
-  padding: 10px 12px;
-  border: 1px solid var(--borda);
-  border-radius: 8px;
+  padding: 11px 14px;
+  border: 2px solid var(--borda);
+  border-radius: 12px;
   font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.form-row input:focus {
+  outline: none;
+  border-color: var(--roxo);
 }
 
 .form-row button,
 .btn-escolher {
-  background: var(--azul);
+  background: var(--gradiente);
   color: #fff;
   border: none;
-  padding: 11px 18px;
-  border-radius: 8px;
+  padding: 12px 22px;
+  border-radius: 999px;
   font-size: 0.95rem;
+  font-weight: 700;
+  font-family: inherit;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 14px -4px rgba(124, 58, 237, 0.5);
 }
 
 .form-row button:hover,
 .btn-escolher:hover:not(:disabled) {
-  background: #163f74;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 20px -6px rgba(124, 58, 237, 0.55);
 }
 
 .hint {
@@ -105,64 +130,94 @@ body {
 
 .hint.ok {
   color: var(--verde);
+  font-weight: 700;
 }
 
 .lembrete {
-  background: #fff6e0;
-  border: 1px solid #f0d488;
-  color: #7a5c00;
-  padding: 12px 16px;
-  border-radius: 10px;
+  background: #fff3d6;
+  border: 2px dashed var(--amarelo);
+  color: #8a5a00;
+  padding: 14px 18px;
+  border-radius: 16px;
   margin: 18px 0;
   font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .tabs {
   display: flex;
-  gap: 8px;
-  margin: 24px 0 18px;
+  gap: 10px;
+  margin: 28px 0 20px;
 }
 
 .tab-btn {
   flex: 1;
-  padding: 12px;
-  border: 1px solid var(--borda);
+  padding: 13px;
+  border: 2px solid var(--borda);
   background: #fff;
-  border-radius: 10px;
+  border-radius: 999px;
   font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
   cursor: pointer;
-  color: var(--texto);
+  color: var(--roxo-escuro);
+  transition: transform 0.15s ease;
+}
+
+.tab-btn:hover {
+  transform: translateY(-1px);
 }
 
 .tab-btn.active {
-  background: var(--azul);
+  background: var(--gradiente);
   color: #fff;
-  border-color: var(--azul);
+  border-color: transparent;
+  box-shadow: 0 6px 16px -6px rgba(124, 58, 237, 0.5);
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 18px;
+  gap: 20px;
 }
 
 .itinerario-card {
   background: #fff;
   border: 1px solid var(--borda);
-  border-radius: 12px;
+  border-top: 6px solid var(--roxo);
+  border-radius: 20px;
   padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  box-shadow: 0 6px 20px -12px rgba(124, 58, 237, 0.25);
+  transition: transform 0.15s ease;
+}
+
+.itinerario-card:hover {
+  transform: translateY(-3px);
+}
+
+.itinerario-card:nth-of-type(2) {
+  border-top-color: var(--rosa);
+}
+
+.itinerario-card:nth-of-type(3) {
+  border-top-color: var(--amarelo);
+}
+
+.itinerario-card:nth-of-type(4) {
+  border-top-color: var(--verde);
 }
 
 .itinerario-card.escolhido {
   border: 2px solid var(--verde);
-  box-shadow: 0 0 0 3px rgba(46, 158, 91, 0.12);
+  border-top: 6px solid var(--verde);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
 }
 
 .itinerario-card.esgotado {
-  opacity: 0.75;
+  opacity: 0.7;
 }
 
 .card-header {
@@ -174,24 +229,25 @@ body {
 
 .titulo {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+  color: var(--roxo-escuro);
 }
 
 .professor {
   margin: 0;
   color: var(--cinza);
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .badge-vagas {
   font-size: 0.75rem;
-  font-weight: 700;
-  padding: 4px 10px;
+  font-weight: 800;
+  padding: 5px 12px;
   border-radius: 999px;
   white-space: nowrap;
   background: var(--azul-claro);
-  color: var(--azul);
+  color: var(--roxo-escuro);
 }
 
 .badge-vagas.pouco {
@@ -200,14 +256,14 @@ body {
 }
 
 .badge-vagas.esgotado {
-  background: #fde3e1;
+  background: #ffe1e8;
   color: var(--vermelho);
 }
 
 .video-area {
   aspect-ratio: 16 / 9;
-  background: #10192b;
-  border-radius: 8px;
+  background: #1b1330;
+  border-radius: 14px;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -223,7 +279,7 @@ body {
 
 .video-bloqueado,
 .video-vazio {
-  color: #cbd5e1;
+  color: #d8c9f0;
   text-align: center;
   padding: 20px;
   font-size: 0.9rem;
@@ -238,9 +294,10 @@ body {
 
 .btn-escolher:disabled {
   background: var(--cinza);
+  box-shadow: none;
   cursor: not-allowed;
 }
 
 .btn-escolher.selecionado {
-  background: var(--verde);
+  background: linear-gradient(135deg, var(--verde) 0%, #16a34a 100%);
 }

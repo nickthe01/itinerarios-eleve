@@ -5,41 +5,38 @@ const { asyncHandler } = require('../utils/asyncHandler');
 
 const router = express.Router();
 
-function getToken(req) {
+function getCredentials(req) {
   const header = req.get('authorization') || '';
-  const bearerMatch = header.match(/^Bearer\s+(.+)$/i);
-  if (bearerMatch) return bearerMatch[1];
-  if (req.query.token) return String(req.query.token);
-  return null;
+  const match = header.match(/^Basic\s+(.+)$/i);
+  if (!match) return null;
+  const decoded = Buffer.from(match[1], 'base64').toString('utf8');
+  const separatorIndex = decoded.indexOf(':');
+  if (separatorIndex === -1) return null;
+  return {
+    login: decoded.slice(0, separatorIndex),
+    senha: decoded.slice(separatorIndex + 1),
+  };
 }
 
 router.use((req, res, next) => {
-  const expected = process.env.ADMIN_TOKEN;
-  if (!expected) {
-    return res.status(500).json({ error: 'admin_token_nao_configurado' });
+  const expectedLogin = process.env.COORDENACAO_LOGIN;
+  const expectedSenha = process.env.COORDENACAO_SENHA;
+  if (!expectedLogin || !expectedSenha) {
+    return res.status(500).json({ error: 'coordenacao_credenciais_nao_configuradas' });
   }
-  const token = getToken(req);
-  if (token !== expected) {
+
+  const credentials = getCredentials(req);
+  if (!credentials || credentials.login !== expectedLogin || credentials.senha !== expectedSenha) {
+    res.setHeader('WWW-Authenticate', 'Basic realm="Coordenação"');
     return res.status(401).json({ error: 'nao_autorizado' });
   }
   next();
 });
 
 router.get(
-  '/itinerarios',
+  '/relatorio',
   asyncHandler(async (req, res) => {
     res.json(await service.listAllForAdmin());
-  })
-);
-
-router.put(
-  '/itinerarios/:id',
-  asyncHandler(async (req, res) => {
-    const updated = await service.updateItinerario(req.params.id, req.body || {});
-    if (!updated) {
-      return res.status(404).json({ error: 'nao_encontrado' });
-    }
-    res.json(updated);
   })
 );
 

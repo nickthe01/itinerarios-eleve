@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin — Itinerários</title>
+  <title>Coordenação — Itinerários</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
@@ -12,17 +12,21 @@
 </head>
 <body>
   <header class="topbar">
-    <h1>Painel Admin — Itinerários</h1>
-    <p class="subtitle">Acompanhe as vagas, edite dados e exporte a lista de inscritos.</p>
+    <h1>Coordenação — Relatório de Itinerários</h1>
+    <p class="subtitle">Acompanhe as vagas preenchidas e exporte a lista de inscritos.</p>
   </header>
 
   <main class="container">
     <section id="login-box" class="card">
-      <h2>Acesso administrativo</h2>
+      <h2>Acesso da Coordenação</h2>
       <div class="form-row">
         <label>
-          Token de admin
-          <input type="password" id="input-token" placeholder="Cole o ADMIN_TOKEN" />
+          Usuário
+          <input type="text" id="input-login" autocomplete="username" />
+        </label>
+        <label>
+          Senha
+          <input type="password" id="input-senha" autocomplete="current-password" />
         </label>
         <button id="btn-entrar" type="button">Entrar</button>
       </div>
@@ -32,40 +36,26 @@
     <section id="painel" hidden>
       <div class="admin-toolbar">
         <button id="btn-atualizar" type="button">Atualizar</button>
-        <a id="link-export-tudo" class="btn-export" href="#">Exportar CSV (tudo)</a>
+        <button id="btn-export-tudo" class="btn-export" type="button">Exportar CSV (tudo)</button>
       </div>
-      <div id="admin-lista"></div>
+      <div id="relatorio-lista"></div>
     </section>
   </main>
 
-  <template id="template-admin-card">
+  <template id="template-relatorio-card">
     <article class="admin-card">
       <div class="admin-card-header">
         <div>
           <span class="dia-tag"></span>
           <h3 class="titulo"></h3>
-          <span class="pendente-badge" hidden>PENDENTE — preencher</span>
         </div>
         <span class="badge-vagas"></span>
       </div>
       <p class="professor"></p>
       <div class="admin-actions">
-        <button class="btn-toggle-editar" type="button">Editar</button>
         <button class="btn-toggle-alunos" type="button">Ver alunos</button>
-        <a class="btn-export" href="#">Exportar CSV</a>
+        <button class="btn-export-item" type="button">Exportar CSV</button>
       </div>
-
-      <form class="form-editar" hidden>
-        <label>Título <input name="titulo" type="text" /></label>
-        <label>Professor(a) <input name="professor" type="text" /></label>
-        <label>Descrição <textarea name="descricao" rows="4"></textarea></label>
-        <label>URL do vídeo <input name="video_url" type="text" placeholder="https://..." /></label>
-        <label>Capacidade <input name="capacidade" type="number" min="1" /></label>
-        <div class="form-editar-botoes">
-          <button type="submit">Salvar alterações</button>
-          <span class="salvo-msg"></span>
-        </div>
-      </form>
 
       <div class="lista-alunos" hidden>
         <table>
@@ -79,6 +69,6 @@
     </article>
   </template>
 
-  <script src="js/admin.js"></script>
+  <script src="js/coordenacao.js"></script>
 </body>
 </html>

@@ -3,6 +3,7 @@ const express = require('express');
 
 const publicRoutes = require('./src/routes/public');
 const adminRoutes = require('./src/routes/admin');
+const coordenacaoRoutes = require('./src/routes/coordenacao');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +13,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api', publicRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/coordenacao', coordenacaoRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);
