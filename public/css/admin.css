@@ -1,5 +1,55 @@
+.topbar {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 4px solid var(--orange);
+  border-radius: 0;
+  background: #2d2d2d;
+  color: #fff;
+  padding: 112px 20px 76px;
+  text-align: center;
+}
+
+.topbar::after {
+  content: '';
+  position: absolute;
+  right: 8%;
+  bottom: -64px;
+  width: 180px;
+  height: 180px;
+  border: 2px solid rgba(26, 194, 194, 0.32);
+  border-radius: 40%;
+  transform: rotate(18deg);
+}
+
+.topbar h1 {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 8px;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+}
+
+.topbar .subtitle {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-weight: 700;
+}
+
+.admin-container {
+  margin-top: -42px;
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  padding: clamp(22px, 4vw, 36px);
+  box-shadow: var(--shadow-md);
+}
+
 .admin-toolbar {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   margin: 20px 0;
 }
@@ -7,26 +57,47 @@
 .btn-export,
 #btn-atualizar {
   background: var(--gradiente);
-  color: #fff;
+  color: var(--ink-strong);
   border: none;
   padding: 10px 18px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font-size: 0.9rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
+  min-height: 44px;
+}
+
+.admin-toolbar button {
+  min-height: 44px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--orange);
+  color: var(--ink-strong);
+  padding: 10px 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-status {
+  display: flex;
+  flex: 1 1 220px;
+  align-items: center;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
 .admin-card {
   background: #fff;
   border: 1px solid var(--borda);
-  border-top: 5px solid var(--roxo);
-  border-radius: 18px;
+  border-top: 4px solid var(--orange);
+  border-radius: var(--radius-md);
   padding: 18px;
   margin-bottom: 16px;
-  box-shadow: 0 6px 20px -12px rgba(124, 58, 237, 0.2);
+  box-shadow: var(--shadow-sm);
 }
 
 .admin-card-header {
@@ -68,16 +139,18 @@
 
 .admin-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 12px;
 }
 
 .admin-actions button {
-  background: var(--azul-claro);
-  color: var(--roxo-escuro);
-  border: none;
+  background: var(--teal-light);
+  color: var(--teal-dark);
+  border: 1px solid rgba(26, 194, 194, 0.35);
+  min-height: 44px;
   padding: 8px 16px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-weight: 700;
   font-size: 0.85rem;
@@ -110,6 +183,12 @@
   font-family: inherit;
 }
 
+.form-editar input:focus-visible,
+.form-editar textarea:focus-visible {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px rgba(255, 111, 61, 0.18);
+}
+
 .form-editar-botoes {
   display: flex;
   align-items: center;
@@ -118,10 +197,10 @@
 
 .form-editar-botoes button {
   background: var(--verde);
-  color: #fff;
+  color: var(--teal-dark);
   border: none;
   padding: 9px 18px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font-weight: 700;
   cursor: pointer;
 }
@@ -137,6 +216,16 @@
   font-size: 0.85rem;
 }
 
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior: contain;
+}
+
+.table-scroll table {
+  min-width: 640px;
+}
+
 .lista-alunos th,
 .lista-alunos td {
   text-align: left;
@@ -149,7 +238,7 @@
   color: var(--vermelho);
   border: none;
   padding: 4px 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font-size: 0.75rem;
   font-weight: 700;
   font-family: inherit;
@@ -163,4 +252,24 @@
 
 .btn-remover-escolha {
   align-self: center;
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    padding: 104px 16px 68px;
+    border-radius: 0;
+  }
+
+  .admin-container {
+    width: min(100% - 24px, 1100px);
+  }
+
+  .admin-card-header {
+    flex-direction: column;
+  }
+
+  .admin-actions > * {
+    flex: 1 1 calc(50% - 10px);
+    text-align: center;
+  }
 }

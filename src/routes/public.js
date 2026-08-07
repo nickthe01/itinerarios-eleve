@@ -52,6 +52,29 @@ router.post(
   })
 );
 
+router.post(
+  '/inscricoes/confirmar',
+  asyncHandler(async (req, res) => {
+    const { nome, turma, tercaId, quartaId } = req.body || {};
+    if (!nome || !String(nome).trim() || !turma || !String(turma).trim() || !tercaId || !quartaId) {
+      return res.status(400).json({ error: 'campos_obrigatorios' });
+    }
+
+    const result = await service.confirmarEscolhas(nome, turma, tercaId, quartaId);
+    if (result.error === service.CHEIO) {
+      return res.status(409).json({ error: 'cheio', dia: result.dia });
+    }
+    if (result.error === service.NAO_ENCONTRADO) {
+      return res.status(404).json({ error: 'itinerarios_invalidos' });
+    }
+    if (result.error === service.CONFIRMADO) {
+      return res.status(403).json({ error: 'confirmado' });
+    }
+
+    res.json(result);
+  })
+);
+
 router.delete(
   '/inscricoes',
   asyncHandler(async (req, res) => {

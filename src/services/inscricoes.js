@@ -30,7 +30,9 @@ async function listByDia(dia) {
       capacidade: r.capacidade,
       vagas_restantes,
       bloqueado,
-      video_url: bloqueado ? null : r.video_url || null,
+      // A apresentação continua disponível mesmo quando a turma lota;
+      // somente a ação de matrícula é bloqueada no cliente.
+      video_url: r.video_url || null,
     });
   }
   return result;
@@ -108,6 +110,99 @@ async function chooseItinerario(nome, turma, itinerarioId) {
     return {
       ok: true,
       itinerario: { id: itinerario.id, titulo: itinerario.titulo, dia: itinerario.dia },
+    };
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+async function confirmarEscolhas(nome, turma, tercaId, quartaId) {
+  const nomeTrim = String(nome || '').trim();
+  const turmaTrim = String(turma || '').trim();
+  const nomeNorm = normalize(nomeTrim);
+  const turmaNorm = normalize(turmaTrim);
+  const ids = [parseInt(tercaId, 10), parseInt(quartaId, 10)].sort((a, b) => a - b);
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const { rows: itinerarios } = await client.query(
+      'SELECT * FROM itinerarios WHERE id = ANY($1::int[]) ORDER BY id FOR UPDATE',
+      [ids]
+    );
+    const byDay = Object.fromEntries(itinerarios.map((item) => [item.dia, item]));
+
+    if (itinerarios.length !== 2 || !byDay.terca || !byDay.quarta
+      || byDay.terca.id !== parseInt(tercaId, 10)
+      || byDay.quarta.id !== parseInt(quartaId, 10)) {
+      await client.query('ROLLBACK');
+      return { error: NAO_ENCONTRADO };
+    }
+
+    const { rows: existingRows } = await client.query(
+      `SELECT * FROM inscricoes
+       WHERE nome_norm = $1 AND turma_norm = $2
+       ORDER BY dia
+       FOR UPDATE`,
+      [nomeNorm, turmaNorm]
+    );
+    const existingByDay = Object.fromEntries(existingRows.map((item) => [item.dia, item]));
+
+    if (existingRows.some((item) => item.confirmado)) {
+      await client.query('ROLLBACK');
+      return { error: CONFIRMADO };
+    }
+
+    for (const dia of DIAS) {
+      const itinerario = byDay[dia];
+      const count = await countInscritos(client, itinerario.id);
+      const isSameSeat = existingByDay[dia]?.itinerario_id === itinerario.id;
+      if (count >= itinerario.capacidade && !isSameSeat) {
+        await client.query('ROLLBACK');
+        return { error: CHEIO, dia };
+      }
+    }
+
+    for (const dia of DIAS) {
+      const itinerario = byDay[dia];
+      await client.query(
+        `INSERT INTO inscricoes (itinerario_id, dia, nome_aluno, turma_aluno, nome_norm, turma_norm, confirmado, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, true, now())
+         ON CONFLICT (dia, nome_norm, turma_norm) DO UPDATE SET
+           itinerario_id = excluded.itinerario_id,
+           nome_aluno = excluded.nome_aluno,
+           turma_aluno = excluded.turma_aluno,
+           confirmado = true,
+           updated_at = now()`,
+        [itinerario.id, dia, nomeTrim, turmaTrim, nomeNorm, turmaNorm]
+      );
+    }
+
+    await client.query('COMMIT');
+    return {
+      ok: true,
+      escolhas: Object.fromEntries(
+        DIAS.map((dia) => {
+          const item = byDay[dia];
+          return [
+            dia,
+            {
+              id: item.id,
+              itinerario_id: item.id,
+              titulo: item.titulo,
+              professor: item.professor,
+              descricao: item.descricao,
+              video_url: item.video_url,
+              capacidade: item.capacidade,
+              confirmado: true,
+            },
+          ];
+        })
+      ),
     };
   } catch (err) {
     await client.query('ROLLBACK');
@@ -211,6 +306,7 @@ module.exports = {
   listByDia,
   getMinhasEscolhas,
   chooseItinerario,
+  confirmarEscolhas,
   listAllForAdmin,
   updateItinerario,
   removerInscricao,

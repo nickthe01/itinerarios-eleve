@@ -3,100 +3,250 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Itinerários do Contraturno</title>
+  <meta name="theme-color" content="#2d2d2d" />
+  <title>Escolha de Itinerários — Colégio Eleve</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/admin.css" />
 </head>
 <body>
-  <header class="topbar">
-    <img src="logo-colegio.png" alt="Logo do colégio" class="logo-colegio" />
-    <h1>Itinerários do Contraturno</h1>
-    <p class="subtitle">Assista à apresentação de cada itinerário e escolha o seu para terça e para quarta-feira.</p>
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+
+  <div class="brandbar brandbar-student">
+    <div class="brandbar-inner">
+      <a class="brand-lockup" href="/" aria-label="Colégio Eleve — início">
+        <span class="brand-logo-frame" aria-hidden="true">
+          <img class="brand-logo" src="assets/logo-eleve.png" alt="" width="29" height="40" />
+        </span>
+        <span class="brand-wordmark"><strong>ELEVE</strong><small>COLÉGIO</small></span>
+      </a>
+      <span class="brand-product">Itinerários</span>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="hero-shape hero-shape-one" aria-hidden="true"></div>
+    <div class="hero-shape hero-shape-two" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <p class="hero-kicker">Matrículas · Contraturno</p>
+      <h1>Escolha seu próximo desafio.</h1>
+      <p class="hero-copy">Conheça os itinerários, compare as propostas e confirme suas escolhas para terça e quarta-feira.</p>
+      <div class="hero-facts" aria-label="Resumo do processo">
+        <span>2 dias</span>
+        <span aria-hidden="true">•</span>
+        <span>2 escolhas</span>
+        <span aria-hidden="true">•</span>
+        <span>1 matrícula</span>
+      </div>
+    </div>
   </header>
 
-  <main class="container">
-    <section id="identificacao" class="card identificacao">
-      <h2>Quem é você?</h2>
-      <div class="form-row">
-        <label>
-          Turma
-          <select id="input-turma">
-            <option value="">Selecione sua turma...</option>
-          </select>
-        </label>
-        <label>
-          Nome completo
-          <select id="input-nome" disabled>
-            <option value="">Selecione a turma primeiro...</option>
-          </select>
-        </label>
-      </div>
-      <p id="status-aluno" class="hint"></p>
-    </section>
-
-    <p id="lembrete" class="lembrete" hidden></p>
-
-    <nav class="tabs">
-      <button class="tab-btn active" data-dia="terca">Terça-feira</button>
-      <button class="tab-btn" data-dia="quarta" id="tab-quarta" disabled>Quarta-feira</button>
+  <main id="conteudo-principal" class="container">
+    <nav class="progress-card" aria-label="Progresso da matrícula">
+      <ol class="steps">
+        <li class="step active" data-step="identificacao" aria-current="step">
+          <span class="step-number">1</span>
+          <span class="step-label">Identificação</span>
+        </li>
+        <li class="step" data-step="terca">
+          <span class="step-number">2</span>
+          <span class="step-label">Terça</span>
+        </li>
+        <li class="step" data-step="quarta">
+          <span class="step-number">3</span>
+          <span class="step-label">Quarta</span>
+        </li>
+        <li class="step" data-step="revisao">
+          <span class="step-number">4</span>
+          <span class="step-label">Revisão</span>
+        </li>
+      </ol>
     </nav>
 
-    <section id="lista-itinerarios" class="grid"></section>
+    <section id="etapa-identificacao" class="identity-card" aria-labelledby="titulo-identificacao">
+      <div class="identity-intro">
+        <p class="eyebrow">Vamos começar</p>
+        <h2 id="titulo-identificacao">Quem está fazendo a matrícula?</h2>
+        <p>Selecione sua turma e depois seu nome para consultar escolhas já existentes.</p>
+      </div>
+
+      <form id="form-identificacao" class="identity-form" novalidate>
+        <label for="input-turma">
+          <span>Turma</span>
+          <select id="input-turma" name="turma" autocomplete="off" required>
+            <option value="">Selecione sua turma…</option>
+          </select>
+        </label>
+        <label for="input-nome">
+          <span>Nome completo</span>
+          <select id="input-nome" name="nome" autocomplete="name" required disabled>
+            <option value="">Selecione a turma primeiro…</option>
+          </select>
+        </label>
+        <p id="erro-identificacao" class="form-error" role="alert" hidden></p>
+        <button id="btn-identificar" class="btn btn-primary btn-large" type="submit">
+          <span class="btn-label">Ver Itinerários</span>
+          <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+      </form>
+
+      <p class="privacy-note"><span aria-hidden="true">◎</span> Confira seus dados antes de continuar, especialmente em dispositivos compartilhados.</p>
+    </section>
+
+    <div id="area-matricula" hidden>
+      <aside class="student-bar" aria-label="Aluno identificado">
+        <div class="student-avatar" aria-hidden="true">A</div>
+        <div class="student-info">
+          <span>Você está escolhendo como</span>
+          <strong id="aluno-resumo"></strong>
+        </div>
+        <button id="btn-trocar-aluno" class="btn-link" type="button">Trocar aluno</button>
+      </aside>
+
+      <nav class="day-switcher" aria-label="Dia do itinerário">
+        <button class="day-button active" type="button" data-dia="terca" aria-pressed="true">
+          <span class="day-number">1</span>
+          <span><small>Primeira escolha</small>Terça-feira</span>
+          <span class="day-check" aria-hidden="true">✓</span>
+        </button>
+        <button class="day-button" type="button" data-dia="quarta" aria-pressed="false" disabled>
+          <span class="day-number">2</span>
+          <span><small>Segunda escolha</small>Quarta-feira</span>
+          <span class="day-check" aria-hidden="true">✓</span>
+        </button>
+      </nav>
+
+      <section id="etapa-escolha" class="choice-section" aria-labelledby="titulo-etapa">
+        <header class="section-heading">
+          <div>
+            <p id="etapa-indicador" class="eyebrow">Etapa 2 de 4</p>
+            <h2 id="titulo-etapa">Escolha seu itinerário de terça-feira</h2>
+            <p id="texto-etapa">Assista aos vídeos e selecione a proposta que mais combina com você.</p>
+          </div>
+          <p id="atualizacao-vagas" class="update-status" role="status" aria-live="polite"></p>
+        </header>
+
+        <div id="lista-loading" class="skeleton-grid" aria-label="Carregando itinerários">
+          <div class="skeleton-card" aria-hidden="true"></div>
+          <div class="skeleton-card" aria-hidden="true"></div>
+          <div class="skeleton-card" aria-hidden="true"></div>
+        </div>
+
+        <div id="lista-erro" class="state-card error-state" role="alert" hidden>
+          <span class="state-icon" aria-hidden="true">!</span>
+          <div>
+            <h3>Não foi possível carregar os itinerários</h3>
+            <p>Verifique sua conexão e tente novamente.</p>
+          </div>
+          <button id="btn-tentar-novamente" class="btn btn-secondary" type="button">Tentar Novamente</button>
+        </div>
+
+        <div id="lista-vazia" class="state-card" hidden>
+          <span class="state-icon" aria-hidden="true">○</span>
+          <div>
+            <h3>Nenhum itinerário disponível</h3>
+            <p>A coordenação ainda não publicou opções para este dia.</p>
+          </div>
+        </div>
+
+        <div id="lista-itinerarios" class="course-grid" aria-live="polite"></div>
+
+        <section id="selection-action" class="selection-action" aria-live="polite" hidden>
+          <div>
+            <span class="selection-label">Sua escolha</span>
+            <strong id="selection-title"></strong>
+          </div>
+          <button id="btn-avancar" class="btn btn-primary" type="button"></button>
+        </section>
+      </section>
+
+      <section id="etapa-revisao" class="review-section" aria-labelledby="titulo-revisao" hidden>
+        <header class="section-heading review-heading">
+          <div>
+            <p class="eyebrow">Etapa 4 de 4</p>
+            <h2 id="titulo-revisao">Revise antes de confirmar</h2>
+            <p>As vagas só serão registradas quando você clicar em “Confirmar Matrícula”.</p>
+          </div>
+        </header>
+
+        <div class="review-grid">
+          <article class="review-card">
+            <div class="review-day">Terça-feira</div>
+            <h3 id="review-terca-titulo"></h3>
+            <p id="review-terca-professor"></p>
+            <button class="btn-link btn-editar-dia" type="button" data-dia="terca">Editar Escolha</button>
+          </article>
+          <article class="review-card">
+            <div class="review-day">Quarta-feira</div>
+            <h3 id="review-quarta-titulo"></h3>
+            <p id="review-quarta-professor"></p>
+            <button class="btn-link btn-editar-dia" type="button" data-dia="quarta">Editar Escolha</button>
+          </article>
+        </div>
+
+        <div class="review-confirmation">
+          <p><strong>Está tudo certo?</strong> Confirme para garantir as duas vagas.</p>
+          <p id="erro-confirmacao" class="form-error" role="alert" hidden></p>
+          <button id="btn-confirmar-matricula" class="btn btn-primary btn-large" type="button">
+            <span class="btn-label">Confirmar Matrícula</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </section>
+
+      <section id="etapa-sucesso" class="success-section" aria-labelledby="titulo-sucesso" hidden>
+        <div class="success-mark" aria-hidden="true">✓</div>
+        <p class="eyebrow">Matrícula concluída</p>
+        <h2 id="titulo-sucesso">Suas vagas estão garantidas!</h2>
+        <p id="sucesso-aluno" class="success-copy"></p>
+        <div class="success-summary">
+          <div>
+            <span>Terça-feira</span>
+            <strong id="sucesso-terca"></strong>
+          </div>
+          <div>
+            <span>Quarta-feira</span>
+            <strong id="sucesso-quarta"></strong>
+          </div>
+        </div>
+        <div class="success-actions">
+          <button id="btn-alterar-escolhas" class="btn btn-secondary" type="button">Alterar Escolhas</button>
+          <button id="btn-encerrar" class="btn btn-primary" type="button">Encerrar</button>
+        </div>
+      </section>
+    </div>
   </main>
-
-  <div id="parabens-overlay" class="overlay" hidden>
-    <div class="modal modal-parabens">
-      <h2 id="parabens-titulo">Parabéns pela escolha!</h2>
-      <p id="parabens-resumo" class="hint"></p>
-      <div class="parabens-botoes">
-        <button id="btn-parabens-alterar" type="button" class="btn-secundario">Alterar</button>
-        <button id="btn-parabens-proximo" type="button">Escolher o Próximo</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="confirmar-inscricao-overlay" class="overlay" hidden>
-    <div class="modal modal-parabens">
-      <h2>Confirmar inscrição nos itinerários</h2>
-      <div id="confirmar-inscricao-resumo" class="confirmar-resumo"></div>
-      <div class="parabens-botoes">
-        <button id="btn-confirmar-inscricao-ok" type="button">Confirmar</button>
-        <button id="btn-confirmar-inscricao-alterar" type="button" class="btn-secundario">Alterar</button>
-      </div>
-    </div>
-  </div>
 
   <footer class="footer-coord">
     <button id="btn-abrir-coordenacao" type="button">Área da Coordenação</button>
   </footer>
 
   <div id="coordenacao-overlay" class="overlay" hidden>
-    <div class="modal">
-      <button id="btn-fechar-coordenacao" class="btn-fechar-modal" type="button" aria-label="Fechar">×</button>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="coord-modal-titulo">
+      <button id="btn-fechar-coordenacao" class="btn-fechar-modal" type="button" aria-label="Fechar área da coordenação">×</button>
 
       <section id="coord-login-box">
-        <h2>Acesso da Coordenação</h2>
+        <h2 id="coord-modal-titulo">Acesso da Coordenação</h2>
         <div class="form-row">
-          <label>
+          <label for="coord-input-login">
             Usuário
-            <input type="text" id="coord-input-login" autocomplete="username" />
+            <input type="text" id="coord-input-login" name="usuario" autocomplete="username" spellcheck="false" />
           </label>
-          <label>
+          <label for="coord-input-senha">
             Senha
-            <input type="password" id="coord-input-senha" autocomplete="current-password" />
+            <input type="password" id="coord-input-senha" name="senha" autocomplete="current-password" />
           </label>
           <button id="coord-btn-entrar" type="button">Entrar</button>
         </div>
-        <p id="coord-login-erro" class="hint"></p>
+        <p id="coord-login-erro" class="hint" role="status" aria-live="polite"></p>
       </section>
 
       <section id="coord-painel" hidden>
         <div class="admin-toolbar">
           <button id="coord-btn-atualizar" type="button">Atualizar</button>
-          <button id="coord-btn-export-tudo" class="btn-export" type="button">Exportar CSV (tudo)</button>
+          <button id="coord-btn-export-tudo" class="btn-export" type="button">Exportar CSV (Tudo)</button>
         </div>
         <div id="coord-relatorio-lista"></div>
       </section>
@@ -114,14 +264,14 @@
       </div>
       <p class="professor"></p>
       <div class="admin-actions">
-        <button class="btn-toggle-alunos" type="button">Ver alunos</button>
+        <button class="btn-toggle-alunos" type="button" aria-expanded="false">Ver Alunos</button>
         <button class="btn-export-item" type="button">Exportar CSV</button>
       </div>
 
-      <div class="lista-alunos" hidden>
+      <div class="lista-alunos table-scroll" hidden>
         <table>
           <thead>
-            <tr><th>#</th><th>Nome</th><th>Turma</th><th>Inscrito em</th><th></th></tr>
+            <tr><th>#</th><th>Nome</th><th>Turma</th><th>Inscrito em</th><th>Ações</th></tr>
           </thead>
           <tbody></tbody>
         </table>
@@ -131,16 +281,23 @@
   </template>
 
   <template id="template-card">
-    <article class="itinerario-card">
-      <span class="check-selecionado">✓</span>
-      <div class="card-header">
-        <h3 class="titulo"></h3>
+    <article class="course-card">
+      <div class="course-selected-mark" aria-hidden="true">✓</div>
+      <div class="course-topline">
+        <span class="course-subject">Itinerário</span>
         <span class="badge-vagas"></span>
       </div>
+      <h3 class="titulo"></h3>
       <p class="professor"></p>
       <div class="video-area"></div>
-      <p class="descricao"></p>
-      <button class="btn-escolher" type="button">Selecionar este itinerário</button>
+      <div class="course-description">
+        <p class="descricao"></p>
+        <button class="btn-detalhes" type="button" aria-expanded="false">Ver Detalhes</button>
+      </div>
+      <button class="btn btn-select btn-escolher" type="button">
+        <span class="btn-label">Escolher Este Itinerário</span>
+        <span class="btn-spinner" aria-hidden="true"></span>
+      </button>
     </article>
   </template>
 
