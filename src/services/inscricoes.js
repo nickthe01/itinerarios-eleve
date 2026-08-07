@@ -155,6 +155,16 @@ async function updateItinerario(id, fields) {
   return updatedRows[0];
 }
 
+async function removerMinhaEscolha(nome, turma, dia) {
+  const nomeNorm = normalize(nome);
+  const turmaNorm = normalize(turma);
+  const { rows } = await pool.query(
+    'DELETE FROM inscricoes WHERE dia = $1 AND nome_norm = $2 AND turma_norm = $3 RETURNING *',
+    [dia, nomeNorm, turmaNorm]
+  );
+  return rows[0] || null;
+}
+
 async function removerInscricao(id) {
   const { rows } = await pool.query('DELETE FROM inscricoes WHERE id = $1 RETURNING *', [id]);
   return rows[0] || null;
@@ -167,6 +177,7 @@ module.exports = {
   listAllForAdmin,
   updateItinerario,
   removerInscricao,
+  removerMinhaEscolha,
   CHEIO,
   NAO_ENCONTRADO,
 };

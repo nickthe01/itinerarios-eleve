@@ -26,9 +26,12 @@
         </label>
         <label>
           Turma / série
-          <input type="text" id="input-turma" placeholder="Ex: 9º Ano A" autocomplete="off" />
+          <select id="input-turma">
+            <option value="">Selecione...</option>
+            <option value="1ª Série">1ª Série</option>
+            <option value="2ª Série">2ª Série</option>
+          </select>
         </label>
-        <button id="btn-salvar-aluno" type="button">Salvar</button>
       </div>
       <p id="status-aluno" class="hint"></p>
     </section>
@@ -37,11 +40,33 @@
 
     <nav class="tabs">
       <button class="tab-btn active" data-dia="terca">Terça-feira</button>
-      <button class="tab-btn" data-dia="quarta">Quarta-feira</button>
+      <button class="tab-btn" data-dia="quarta" id="tab-quarta" disabled>Quarta-feira</button>
     </nav>
 
     <section id="lista-itinerarios" class="grid"></section>
   </main>
+
+  <div id="parabens-overlay" class="overlay" hidden>
+    <div class="modal modal-parabens">
+      <h2 id="parabens-titulo">Parabéns pela escolha!</h2>
+      <p id="parabens-resumo" class="hint"></p>
+      <div class="parabens-botoes">
+        <button id="btn-parabens-alterar" type="button" class="btn-secundario">Alterar</button>
+        <button id="btn-parabens-proximo" type="button">Escolher o Próximo</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirmar-inscricao-overlay" class="overlay" hidden>
+    <div class="modal modal-parabens">
+      <h2>Confirmar inscrição nos itinerários</h2>
+      <div id="confirmar-inscricao-resumo" class="confirmar-resumo"></div>
+      <div class="parabens-botoes">
+        <button id="btn-confirmar-inscricao-ok" type="button">Confirmar</button>
+        <button id="btn-confirmar-inscricao-alterar" type="button" class="btn-secundario">Alterar</button>
+      </div>
+    </div>
+  </div>
 
   <footer class="footer-coord">
     <button id="btn-abrir-coordenacao" type="button">Área da Coordenação</button>
@@ -106,6 +131,7 @@
 
   <template id="template-card">
     <article class="itinerario-card">
+      <span class="check-selecionado">✓</span>
       <div class="card-header">
         <h3 class="titulo"></h3>
         <span class="badge-vagas"></span>
@@ -113,7 +139,7 @@
       <p class="professor"></p>
       <div class="video-area"></div>
       <p class="descricao"></p>
-      <button class="btn-escolher" type="button">Escolher este itinerário</button>
+      <button class="btn-escolher" type="button">Selecionar este itinerário</button>
     </article>
   </template>
 

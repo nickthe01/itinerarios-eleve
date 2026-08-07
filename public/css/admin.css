@@ -160,3 +160,7 @@
   background: var(--vermelho);
   color: #fff;
 }
+
+.btn-remover-escolha {
+  align-self: center;
+}

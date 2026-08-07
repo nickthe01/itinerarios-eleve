@@ -1,15 +1,25 @@
 (function () {
   const DIA_LABEL = { terca: 'terça-feira', quarta: 'quarta-feira' };
+  const DIA_TITULO = { terca: 'Terça-feira', quarta: 'Quarta-feira' };
 
   const els = {
     nome: document.getElementById('input-nome'),
     turma: document.getElementById('input-turma'),
-    btnSalvar: document.getElementById('btn-salvar-aluno'),
     statusAluno: document.getElementById('status-aluno'),
     lembrete: document.getElementById('lembrete'),
     tabs: document.querySelectorAll('.tab-btn'),
+    tabQuarta: document.getElementById('tab-quarta'),
     lista: document.getElementById('lista-itinerarios'),
     template: document.getElementById('template-card'),
+    parabensOverlay: document.getElementById('parabens-overlay'),
+    parabensTitulo: document.getElementById('parabens-titulo'),
+    parabensResumo: document.getElementById('parabens-resumo'),
+    btnParabensAlterar: document.getElementById('btn-parabens-alterar'),
+    btnParabensProximo: document.getElementById('btn-parabens-proximo'),
+    confirmarInscricaoOverlay: document.getElementById('confirmar-inscricao-overlay'),
+    confirmarInscricaoResumo: document.getElementById('confirmar-inscricao-resumo'),
+    btnConfirmarInscricaoOk: document.getElementById('btn-confirmar-inscricao-ok'),
+    btnConfirmarInscricaoAlterar: document.getElementById('btn-confirmar-inscricao-alterar'),
   };
 
   let currentDia = 'terca';
@@ -19,7 +29,7 @@
   function getAluno() {
     return {
       nome: (els.nome.value || '').trim(),
-      turma: (els.turma.value || '').trim(),
+      turma: els.turma.value || '',
     };
   }
 
@@ -34,18 +44,20 @@
     atualizarStatusAluno();
   }
 
-  function salvarAluno() {
+  function persistirAluno() {
     const { nome, turma } = getAluno();
-    if (!nome || !turma) {
-      els.statusAluno.textContent = 'Preencha nome e turma para continuar.';
-      els.statusAluno.className = 'hint';
-      return;
-    }
-    localStorage.setItem('itin_nome', nome);
-    localStorage.setItem('itin_turma', turma);
+    if (nome) localStorage.setItem('itin_nome', nome);
+    if (turma) localStorage.setItem('itin_turma', turma);
     atualizarStatusAluno();
-    carregarMinhasEscolhas();
-    carregarLista();
+  }
+
+  function atualizarAposIdentificar() {
+    if (!alunoIdentificado()) return;
+    carregarMinhasEscolhas().then(() => {
+      currentDia = escolhas.terca && !escolhas.quarta ? 'quarta' : 'terca';
+      atualizarTabs();
+      carregarLista();
+    });
   }
 
   function atualizarStatusAluno() {
@@ -53,7 +65,7 @@
       els.statusAluno.textContent = `Identificado como ${getAluno().nome} (${getAluno().turma}).`;
       els.statusAluno.className = 'hint ok';
     } else {
-      els.statusAluno.textContent = 'Preencha seu nome e turma e clique em Salvar antes de escolher um itinerário.';
+      els.statusAluno.textContent = 'Preencha seu nome, selecione a série e clique em Salvar antes de escolher um itinerário.';
       els.statusAluno.className = 'hint';
     }
   }
@@ -86,6 +98,11 @@
     }
     els.lembrete.hidden = false;
     els.lembrete.textContent = `Você ainda não escolheu um itinerário para: ${faltando.map((d) => DIA_LABEL[d]).join(' e ')}.`;
+  }
+
+  function atualizarTabs() {
+    els.tabs.forEach((btn) => btn.classList.toggle('active', btn.dataset.dia === currentDia));
+    els.tabQuarta.disabled = !escolhas.terca;
   }
 
   function renderCard(item, dia) {
@@ -122,24 +139,57 @@
 
     const btn = node.querySelector('.btn-escolher');
     if (isSelected) {
-      btn.textContent = 'Sua escolha atual';
+      btn.textContent = 'Selecionado';
       btn.classList.add('selecionado');
       article.classList.add('escolhido');
     } else if (item.bloqueado) {
       btn.textContent = 'Vagas encerradas';
       btn.disabled = true;
     } else {
-      btn.textContent = 'Escolher este itinerário';
+      btn.textContent = 'Selecionar este itinerário';
     }
 
-    btn.addEventListener('click', () => escolherItinerario(item, dia));
+    const podeSelecionar = !item.bloqueado || isSelected;
+    if (podeSelecionar) {
+      btn.addEventListener('click', () => escolherItinerario(item, dia));
+    }
+
+    if (isSelected) {
+      const btnRemover = document.createElement('button');
+      btnRemover.type = 'button';
+      btnRemover.className = 'btn-remover-aluno btn-remover-escolha';
+      btnRemover.textContent = 'Remover escolha';
+      btnRemover.addEventListener('click', () => removerEscolha(dia));
+      article.appendChild(btnRemover);
+    }
 
     return node;
   }
 
+  async function removerEscolha(dia) {
+    if (!confirm(`Remover sua escolha de ${DIA_LABEL[dia]}? A vaga ficará livre para outro aluno.`)) return;
+    const { nome, turma } = getAluno();
+    try {
+      const resp = await fetch('/api/inscricoes', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, turma, dia }),
+      });
+      if (!resp.ok) {
+        alert('Não foi possível remover sua escolha. Tente novamente.');
+        return;
+      }
+      await carregarMinhasEscolhas();
+      atualizarTabs();
+      await carregarLista();
+    } catch (err) {
+      alert('Erro de conexão. Verifique sua internet e tente novamente.');
+    }
+  }
+
   async function escolherItinerario(item, dia) {
     if (!alunoIdentificado()) {
-      alert('Preencha seu nome e turma e clique em Salvar antes de escolher um itinerário.');
+      alert('Preencha seu nome, selecione a série e clique em Salvar antes de escolher um itinerário.');
       els.nome.focus();
       return;
     }
@@ -160,10 +210,62 @@
         return;
       }
       await carregarMinhasEscolhas();
+      atualizarTabs();
       await carregarLista();
+
+      if (dia === 'quarta') {
+        abrirConfirmarInscricao();
+      } else {
+        abrirParabens(item, dia);
+      }
     } catch (err) {
       alert('Erro de conexão. Verifique sua internet e tente novamente.');
     }
+  }
+
+  function abrirParabens(item, dia) {
+    els.parabensTitulo.textContent = 'Parabéns pela escolha!';
+    els.parabensResumo.textContent = `Você escolheu "${item.titulo}" para ${DIA_LABEL[dia]}.`;
+    els.btnParabensAlterar.hidden = false;
+
+    els.btnParabensAlterar.onclick = () => {
+      els.parabensOverlay.hidden = true;
+    };
+
+    els.btnParabensProximo.textContent = 'Escolher o Próximo';
+    els.btnParabensProximo.onclick = () => {
+      els.parabensOverlay.hidden = true;
+      mudarDia('quarta');
+    };
+
+    els.parabensOverlay.hidden = false;
+  }
+
+  function abrirParabensFinal() {
+    els.parabensTitulo.textContent = 'Inscrição confirmada!';
+    els.parabensResumo.innerHTML = `Você está inscrito em:<br><strong>Terça-feira:</strong> ${escolhas.terca.titulo}<br><strong>Quarta-feira:</strong> ${escolhas.quarta.titulo}`;
+    els.btnParabensAlterar.hidden = true;
+
+    els.btnParabensProximo.textContent = 'Fechar';
+    els.btnParabensProximo.onclick = () => {
+      els.parabensOverlay.hidden = true;
+    };
+
+    els.parabensOverlay.hidden = false;
+  }
+
+  function abrirConfirmarInscricao() {
+    els.confirmarInscricaoResumo.innerHTML = '';
+    [
+      ['Terça-feira', escolhas.terca],
+      ['Quarta-feira', escolhas.quarta],
+    ].forEach(([label, escolha]) => {
+      const div = document.createElement('div');
+      div.className = 'linha';
+      div.innerHTML = `<strong>${label}:</strong> ${escolha ? escolha.titulo : ''}`;
+      els.confirmarInscricaoResumo.appendChild(div);
+    });
+    els.confirmarInscricaoOverlay.hidden = false;
   }
 
   async function carregarLista() {
@@ -187,14 +289,36 @@
     renderLembrete();
   }
 
-  function trocarAba(dia) {
+  function mudarDia(dia) {
+    if (dia === 'quarta' && !escolhas.terca) return;
     currentDia = dia;
-    els.tabs.forEach((btn) => btn.classList.toggle('active', btn.dataset.dia === dia));
+    atualizarTabs();
     carregarLista();
   }
 
-  els.tabs.forEach((btn) => btn.addEventListener('click', () => trocarAba(btn.dataset.dia)));
-  els.btnSalvar.addEventListener('click', salvarAluno);
+  els.tabs.forEach((btn) => btn.addEventListener('click', () => mudarDia(btn.dataset.dia)));
+
+  els.nome.addEventListener('input', persistirAluno);
+  els.nome.addEventListener('blur', atualizarAposIdentificar);
+  els.turma.addEventListener('change', () => {
+    persistirAluno();
+    atualizarAposIdentificar();
+  });
+
+  els.parabensOverlay.addEventListener('click', (ev) => {
+    if (ev.target === els.parabensOverlay) els.parabensOverlay.hidden = true;
+  });
+
+  els.btnConfirmarInscricaoOk.addEventListener('click', () => {
+    els.confirmarInscricaoOverlay.hidden = true;
+    abrirParabensFinal();
+  });
+  els.btnConfirmarInscricaoAlterar.addEventListener('click', () => {
+    els.confirmarInscricaoOverlay.hidden = true;
+  });
+  els.confirmarInscricaoOverlay.addEventListener('click', (ev) => {
+    if (ev.target === els.confirmarInscricaoOverlay) els.confirmarInscricaoOverlay.hidden = true;
+  });
 
   window.addEventListener('focus', () => {
     carregarLista();
@@ -206,5 +330,9 @@
   }, 25000);
 
   loadAlunoFromStorage();
-  carregarMinhasEscolhas().then(carregarLista);
+  carregarMinhasEscolhas().then(() => {
+    currentDia = escolhas.terca && !escolhas.quarta ? 'quarta' : 'terca';
+    atualizarTabs();
+    carregarLista();
+  });
 })();

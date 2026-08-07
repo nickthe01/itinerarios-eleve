@@ -49,4 +49,20 @@ router.post(
   })
 );
 
+router.delete(
+  '/inscricoes',
+  asyncHandler(async (req, res) => {
+    const { nome, turma, dia } = req.body || {};
+    if (!nome || !String(nome).trim() || !turma || !String(turma).trim() || !DIAS_VALIDOS.has(dia)) {
+      return res.status(400).json({ error: 'campos_obrigatorios' });
+    }
+
+    const removida = await service.removerMinhaEscolha(nome, turma, dia);
+    if (!removida) {
+      return res.status(404).json({ error: 'nao_encontrado' });
+    }
+    res.json({ ok: true });
+  })
+);
+
 module.exports = router;

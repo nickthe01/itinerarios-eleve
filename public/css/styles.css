@@ -19,7 +19,7 @@
   --borda: #f0e3ec;
   --fundo: #fdf6f0;
   --texto: #3a3542;
-  --gradiente: linear-gradient(135deg, var(--laranja) 0%, var(--roxo) 100%);
+  --gradiente: var(--laranja);
 }
 
 * {
@@ -29,7 +29,7 @@
 body {
   margin: 0;
   font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: linear-gradient(180deg, #fff3e9 0%, #f0fbf7 45%, #f6f1fc 100%);
+  background: var(--fundo);
   color: var(--texto);
 }
 
@@ -85,6 +85,23 @@ h1, h2, h3 {
   align-items: flex-end;
 }
 
+.form-row select {
+  padding: 11px 14px;
+  border: 2px solid var(--borda);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--texto);
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.form-row select:focus {
+  outline: none;
+  border-color: var(--laranja);
+}
+
 .form-row label {
   display: flex;
   flex-direction: column;
@@ -110,7 +127,8 @@ h1, h2, h3 {
 }
 
 .form-row button,
-.btn-escolher {
+.btn-escolher,
+#btn-parabens-proximo {
   background: var(--gradiente);
   color: #fff;
   border: none;
@@ -172,7 +190,7 @@ h1, h2, h3 {
   transition: transform 0.15s ease;
 }
 
-.tab-btn:hover {
+.tab-btn:hover:not(:disabled) {
   transform: translateY(-1px);
 }
 
@@ -183,6 +201,54 @@ h1, h2, h3 {
   box-shadow: 0 6px 16px -6px rgba(201, 106, 46, 0.45);
 }
 
+.tab-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: var(--cinza);
+}
+
+.modal-parabens {
+  max-width: 460px;
+  text-align: center;
+}
+
+.parabens-botoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.btn-secundario {
+  background: #fff;
+  border: 2px solid var(--borda);
+  color: var(--cinza);
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.confirmar-resumo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+  text-align: left;
+}
+
+.confirmar-resumo .linha {
+  background: var(--fundo);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+}
+
+.confirmar-resumo .linha strong {
+  color: var(--roxo-escuro);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -190,6 +256,7 @@ h1, h2, h3 {
 }
 
 .itinerario-card {
+  position: relative;
   background: #fff;
   border: 1px solid var(--borda);
   border-top: 6px solid var(--laranja);
@@ -200,6 +267,43 @@ h1, h2, h3 {
   gap: 10px;
   box-shadow: 0 6px 18px -12px rgba(107, 79, 160, 0.2);
   transition: transform 0.15s ease;
+}
+
+.check-selecionado {
+  display: none;
+  position: absolute;
+  top: -12px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--verde-agua-escuro);
+  color: #fff;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  box-shadow: 0 4px 10px -2px rgba(35, 117, 102, 0.5);
+}
+
+.itinerario-card.escolhido .check-selecionado {
+  display: flex;
+}
+
+@keyframes pop-selecionado {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.itinerario-card.pop {
+  animation: pop-selecionado 0.35s ease;
 }
 
 .itinerario-card:hover {
@@ -307,7 +411,7 @@ h1, h2, h3 {
 }
 
 .btn-escolher.selecionado {
-  background: linear-gradient(135deg, var(--verde-agua) 0%, var(--verde-agua-escuro) 100%);
+  background: var(--verde-agua-escuro);
 }
 
 .footer-coord {
