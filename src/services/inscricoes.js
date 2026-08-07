@@ -4,6 +4,8 @@ const { normalize } = require('../utils/normalize');
 const DIAS = ['terca', 'quarta'];
 const CHEIO = 'cheio';
 const NAO_ENCONTRADO = 'nao_encontrado';
+const CONFIRMADO = 'confirmado';
+const INCOMPLETO = 'incompleto';
 
 async function countInscritos(queryable, itinerarioId) {
   const { rows } = await queryable.query('SELECT COUNT(*)::int AS count FROM inscricoes WHERE itinerario_id = $1', [
@@ -41,7 +43,7 @@ async function getMinhasEscolhas(nome, turma) {
 
   for (const dia of DIAS) {
     const { rows } = await pool.query(
-      `SELECT ins.dia AS dia, ins.created_at AS created_at,
+      `SELECT ins.dia AS dia, ins.created_at AS created_at, ins.confirmado AS confirmado,
               it.id AS itinerario_id, it.titulo AS titulo, it.professor AS professor,
               it.descricao AS descricao, it.video_url AS video_url, it.capacidade AS capacidade
        FROM inscricoes ins
@@ -79,6 +81,10 @@ async function chooseItinerario(nome, turma, itinerarioId) {
       [itinerario.dia, nomeNorm, turmaNorm]
     );
     const existing = existingRows[0];
+    if (existing && existing.confirmado) {
+      await client.query('ROLLBACK');
+      return { error: CONFIRMADO };
+    }
     const isSameSeat = existing && existing.itinerario_id === itinerario.id;
 
     const count = await countInscritos(client, itinerario.id);
@@ -158,11 +164,42 @@ async function updateItinerario(id, fields) {
 async function removerMinhaEscolha(nome, turma, dia) {
   const nomeNorm = normalize(nome);
   const turmaNorm = normalize(turma);
-  const { rows } = await pool.query(
-    'DELETE FROM inscricoes WHERE dia = $1 AND nome_norm = $2 AND turma_norm = $3 RETURNING *',
+
+  const { rows: existingRows } = await pool.query(
+    'SELECT * FROM inscricoes WHERE dia = $1 AND nome_norm = $2 AND turma_norm = $3',
     [dia, nomeNorm, turmaNorm]
   );
-  return rows[0] || null;
+  const existing = existingRows[0];
+  if (!existing) {
+    return { error: NAO_ENCONTRADO };
+  }
+  if (existing.confirmado) {
+    return { error: CONFIRMADO };
+  }
+
+  await pool.query('DELETE FROM inscricoes WHERE id = $1', [existing.id]);
+  return { ok: true };
+}
+
+async function confirmarInscricoes(nome, turma) {
+  const nomeNorm = normalize(nome);
+  const turmaNorm = normalize(turma);
+
+  const { rows } = await pool.query('SELECT dia FROM inscricoes WHERE nome_norm = $1 AND turma_norm = $2', [
+    nomeNorm,
+    turmaNorm,
+  ]);
+  const dias = rows.map((r) => r.dia);
+  if (!DIAS.every((dia) => dias.includes(dia))) {
+    return { error: INCOMPLETO };
+  }
+
+  await pool.query(
+    'UPDATE inscricoes SET confirmado = true, updated_at = now() WHERE nome_norm = $1 AND turma_norm = $2',
+    [nomeNorm, turmaNorm]
+  );
+
+  return { ok: true };
 }
 
 async function removerInscricao(id) {
@@ -178,6 +215,9 @@ module.exports = {
   updateItinerario,
   removerInscricao,
   removerMinhaEscolha,
+  confirmarInscricoes,
   CHEIO,
   NAO_ENCONTRADO,
+  CONFIRMADO,
+  INCOMPLETO,
 };

@@ -89,8 +89,16 @@
   function renderLembrete() {
     if (!alunoIdentificado()) {
       els.lembrete.hidden = true;
+      els.lembrete.classList.remove('lembrete-confirmado');
       return;
     }
+    if (escolhas.terca && escolhas.terca.confirmado && escolhas.quarta && escolhas.quarta.confirmado) {
+      els.lembrete.hidden = false;
+      els.lembrete.classList.add('lembrete-confirmado');
+      els.lembrete.textContent = 'Sua inscrição já foi confirmada nos dois itinerários e não pode mais ser alterada.';
+      return;
+    }
+    els.lembrete.classList.remove('lembrete-confirmado');
     const faltando = ['terca', 'quarta'].filter((d) => !escolhas[d]);
     if (faltando.length === 0) {
       els.lembrete.hidden = true;
@@ -137,8 +145,14 @@
       videoArea.innerHTML = videoUrl ? videoEmbedHtml(videoUrl) : '<p class="video-vazio">Vídeo em breve.</p>';
     }
 
+    const confirmadoNoDia = Boolean(minhaEscolhaDia && minhaEscolhaDia.confirmado);
+
     const btn = node.querySelector('.btn-escolher');
-    if (isSelected) {
+    if (confirmadoNoDia) {
+      btn.textContent = isSelected ? 'Inscrição confirmada' : 'Inscrição encerrada';
+      btn.disabled = true;
+      if (isSelected) article.classList.add('escolhido');
+    } else if (isSelected) {
       btn.textContent = 'Selecionado';
       btn.classList.add('selecionado');
       article.classList.add('escolhido');
@@ -149,12 +163,12 @@
       btn.textContent = 'Selecionar este itinerário';
     }
 
-    const podeSelecionar = !item.bloqueado || isSelected;
+    const podeSelecionar = !confirmadoNoDia && (!item.bloqueado || isSelected);
     if (podeSelecionar) {
       btn.addEventListener('click', () => escolherItinerario(item, dia));
     }
 
-    if (isSelected) {
+    if (isSelected && !confirmadoNoDia) {
       const btnRemover = document.createElement('button');
       btnRemover.type = 'button';
       btnRemover.className = 'btn-remover-aluno btn-remover-escolha';
@@ -175,6 +189,12 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome, turma, dia }),
       });
+      if (resp.status === 403) {
+        alert('Sua inscrição já foi confirmada e não pode mais ser alterada.');
+        await carregarMinhasEscolhas();
+        await carregarLista();
+        return;
+      }
       if (!resp.ok) {
         alert('Não foi possível remover sua escolha. Tente novamente.');
         return;
@@ -202,6 +222,12 @@
       });
       if (resp.status === 409) {
         alert('Esse itinerário acabou de lotar. Escolha outro, por favor.');
+        await carregarLista();
+        return;
+      }
+      if (resp.status === 403) {
+        alert('Sua inscrição já foi confirmada e não pode mais ser alterada.');
+        await carregarMinhasEscolhas();
         await carregarLista();
         return;
       }
@@ -309,9 +335,29 @@
     if (ev.target === els.parabensOverlay) els.parabensOverlay.hidden = true;
   });
 
-  els.btnConfirmarInscricaoOk.addEventListener('click', () => {
-    els.confirmarInscricaoOverlay.hidden = true;
-    abrirParabensFinal();
+  els.btnConfirmarInscricaoOk.addEventListener('click', async () => {
+    const { nome, turma } = getAluno();
+    els.btnConfirmarInscricaoOk.disabled = true;
+    try {
+      const resp = await fetch('/api/confirmar-inscricao', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, turma }),
+      });
+      if (!resp.ok) {
+        alert('Não foi possível confirmar sua inscrição. Tente novamente.');
+        return;
+      }
+      await carregarMinhasEscolhas();
+      atualizarTabs();
+      await carregarLista();
+      els.confirmarInscricaoOverlay.hidden = true;
+      abrirParabensFinal();
+    } catch (err) {
+      alert('Erro de conexão. Verifique sua internet e tente novamente.');
+    } finally {
+      els.btnConfirmarInscricaoOk.disabled = false;
+    }
   });
   els.btnConfirmarInscricaoAlterar.addEventListener('click', () => {
     els.confirmarInscricaoOverlay.hidden = true;

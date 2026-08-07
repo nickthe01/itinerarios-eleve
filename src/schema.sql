@@ -19,9 +19,12 @@ CREATE TABLE IF NOT EXISTS inscricoes (
   turma_aluno     TEXT NOT NULL,
   nome_norm       TEXT NOT NULL,
   turma_norm      TEXT NOT NULL,
+  confirmado      BOOLEAN NOT NULL DEFAULT false,
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+ALTER TABLE inscricoes ADD COLUMN IF NOT EXISTS confirmado BOOLEAN NOT NULL DEFAULT false;
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_inscricoes_dia_aluno
   ON inscricoes(dia, nome_norm, turma_norm);

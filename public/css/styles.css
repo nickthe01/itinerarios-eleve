@@ -170,6 +170,12 @@ h1, h2, h3 {
   font-weight: 600;
 }
 
+.lembrete.lembrete-confirmado {
+  background: var(--verde-agua-claro);
+  border: 2px solid var(--verde-agua);
+  color: var(--verde-agua-escuro);
+}
+
 .tabs {
   display: flex;
   gap: 10px;

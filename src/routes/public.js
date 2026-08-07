@@ -44,6 +44,9 @@ router.post(
     if (result.error === service.NAO_ENCONTRADO) {
       return res.status(404).json({ error: 'nao_encontrado' });
     }
+    if (result.error === service.CONFIRMADO) {
+      return res.status(403).json({ error: 'confirmado' });
+    }
 
     res.json(result);
   })
@@ -57,11 +60,30 @@ router.delete(
       return res.status(400).json({ error: 'campos_obrigatorios' });
     }
 
-    const removida = await service.removerMinhaEscolha(nome, turma, dia);
-    if (!removida) {
+    const result = await service.removerMinhaEscolha(nome, turma, dia);
+    if (result.error === service.NAO_ENCONTRADO) {
       return res.status(404).json({ error: 'nao_encontrado' });
     }
+    if (result.error === service.CONFIRMADO) {
+      return res.status(403).json({ error: 'confirmado' });
+    }
     res.json({ ok: true });
+  })
+);
+
+router.post(
+  '/confirmar-inscricao',
+  asyncHandler(async (req, res) => {
+    const { nome, turma } = req.body || {};
+    if (!nome || !String(nome).trim() || !turma || !String(turma).trim()) {
+      return res.status(400).json({ error: 'campos_obrigatorios' });
+    }
+
+    const result = await service.confirmarInscricoes(nome, turma);
+    if (result.error === service.INCOMPLETO) {
+      return res.status(400).json({ error: 'escolhas_incompletas' });
+    }
+    res.json(result);
   })
 );
 
