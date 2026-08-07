@@ -341,6 +341,10 @@ h1, h2, h3 {
   z-index: 100;
 }
 
+.overlay[hidden] {
+  display: none;
+}
+
 .modal {
   position: relative;
   background: #fff;
