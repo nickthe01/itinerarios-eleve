@@ -74,12 +74,13 @@ module.exports = [
   {
     slug: 'quarta-4-tbd',
     dia: 'quarta',
-    titulo: 'Itinerário 4 (Quarta-feira) — a definir',
-    professor: 'A definir',
-    descricao: 'Professor(a) e descrição a serem definidos. O admin pode editar este itinerário no painel administrativo assim que a descrição chegar.',
-    video_url: '',
+    titulo: 'Passeio pelo audiovisual',
+    professor: 'Matheus',
+    descricao:
+      'Conhecer diferentes linguagens da produção audiovisual, passando pela criação de podcasts e pela construção de peças publicitárias. Vai aprender a configurar e regular uma câmera, entendendo ajustes técnicos como foco, exposição e enquadramento para captar boas imagens. Também vai desenvolver habilidades de edição, dando forma final ao conteúdo produzido em áudio e vídeo. A trilha combina teoria e prática, permitindo que você experimente todas as etapas de um projeto audiovisual, da captação à finalização. É um caminho para quem quer contar histórias e se comunicar por meio de imagem e som.',
+    video_url: 'https://cwbqrnwkbprxezirurny.supabase.co/storage/v1/object/public/videos/matheus.mp4',
     capacidade: 20,
     ordem: 4,
-    placeholder: 1,
+    placeholder: 0,
   },
 ];
